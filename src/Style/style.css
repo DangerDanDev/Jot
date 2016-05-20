@@ -1,0 +1,16 @@
+.button, .text-area, .text-area .scroll-pane,
+ .text-area .scroll-pane .viewport, .text-area .scroll-pane .content {
+    -fx-background-color: transparent;
+}
+
+.topbar {
+    -fx-background-color: rgb(255,255, 255, 0.2);
+}
+
+.text-field {
+    -fx-background-color: rgb(150,150,150, 0.2);
+}
+
+.background {
+    -fx-background-color: rgb(250,250,160);
+}

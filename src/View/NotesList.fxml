@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
+        <items>
+            <Button fx:id="bDeleteNote" disable="true" mnemonicParsing="false" onAction="#deleteNote" text="Delete" />
+          <Button fx:id="bOpenNote" disable="true" mnemonicParsing="false" onAction="#openSelectedNote" text="Open" />
+            <Button fx:id="bAddNote" mnemonicParsing="false" onAction="#addNewNote" text="Add" />
+        </items>
+      </ToolBar>
+      <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+        <columns>
+          <TableColumn fx:id="titleColumn" prefWidth="220.0" text="Title" />
+          <TableColumn fx:id="lastEditedColumn" prefWidth="79.0" text="Last Edited" />
+        </columns>
+      </TableView>
+   </children>
+</VBox>

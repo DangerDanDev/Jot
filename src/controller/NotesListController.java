@@ -274,6 +274,7 @@ public class NotesListController implements Initializable, NoteListListener {
         //are closed, the program is exiting. Close the database.
         if(controllers.size() == 0 && !getStage().isShowing()) {
             Database.getInstance().close();
+            System.exit(0);
         }
 
         c.getNote().close();

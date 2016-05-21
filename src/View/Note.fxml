@@ -9,11 +9,11 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minWidth="400.0" onMouseDragged="#onMouseDragged" onMouseExited="#onMouseExit" onMouseMoved="#onMouseMoved" onMousePressed="#onMouseDragStarted" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NoteController">
+<VBox fx:id="rootView" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="400.0" onMouseDragged="#onMouseDragged" onMouseExited="#onMouseExit" onMouseMoved="#onMouseMoved" onMousePressed="#onMouseDragStarted" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NoteController">
    <children>
-      <HBox id="topbar" onMouseMoved="#onMouseMoved" prefWidth="200.0" styleClass="topbar">
+      <HBox id="topbar" prefWidth="200.0" styleClass="topbar">
          <children>
-            <Button mnemonicParsing="false" onAction="#addNewNote">
+            <Button mnemonicParsing="false" onAction="#addNewNote" onMouseMoved="#onMouseMoved">
                <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -22,21 +22,30 @@
                   </ImageView>
                </graphic>
             </Button>
-            <TextField fx:id="tfNoteTitle" prefHeight="25.0" prefWidth="142.0" HBox.hgrow="ALWAYS">
+            <TextField fx:id="tfNoteTitle" onMouseMoved="#onMouseMoved" prefHeight="25.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                <HBox.margin>
-                  <Insets right="16.0" top="4.0" />
+                  <Insets top="4.0" />
                </HBox.margin>
             </TextField>
+            <Button fx:id="bDrag" mnemonicParsing="false" onMouseDragged="#onMouseDragged" onMouseMoved="#onMouseMoved" onMousePressed="#onMouseDragStarted">
+               <graphic>
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../Content/drag.png" />
+                     </image>
+                  </ImageView>
+               </graphic>
+            </Button>
             <Button mnemonicParsing="false" onAction="#closeStage" onMouseMoved="#onMouseMoved">
                <graphic>
-                  <ImageView fitHeight="150.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../Content/exit.png" />
                      </image>
                   </ImageView>
                </graphic>
                <HBox.margin>
-                  <Insets right="8.0" />
+                  <Insets />
                </HBox.margin>
             </Button>
          </children>
@@ -44,9 +53,9 @@
             <Insets top="4.0" />
          </padding>
       </HBox>
-      <TextArea fx:id="taNoteContent" prefHeight="200.0" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
+      <TextArea fx:id="taNoteContent" onMouseMoved="#onMouseMoved" prefHeight="200.0" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
          <VBox.margin>
-            <Insets bottom="8.0" left="8.0" right="8.0" />
+            <Insets bottom="12.0" left="12.0" right="12.0" />
          </VBox.margin></TextArea>
    </children>
 </VBox>

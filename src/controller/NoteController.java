@@ -9,10 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -47,6 +44,12 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private NoteListListener listener;
 
     /**
+     * The root view of the note window
+     */
+    @FXML
+    private VBox rootView;
+
+    /**
      * The main body of the note
      */
     @FXML
@@ -57,6 +60,12 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private TextField tfNoteTitle;
+
+    /**
+     * The button that we can click and drag on to move the window
+     */
+    @FXML
+    private Button bDrag;
 
     /**
      * The context menu that shows
@@ -145,20 +154,29 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private void onMouseMoved(MouseEvent event) {
-        //compute if we are within resizing distance of the right side and bottom of the
-        //window
-        horizontalEdge = getStage().getWidth() - event.getSceneX() <= RESIZE_BUFFER;
-        verticalEdge = getStage().getHeight() - event.getSceneY() <= RESIZE_BUFFER;
 
-        //change the cursor based on if we are close enough to resize horizontally/vertically
-        if(horizontalEdge && verticalEdge)
-            getStage().getScene().setCursor(Cursor.SE_RESIZE);
-        else if(horizontalEdge)
-            getStage().getScene().setCursor(Cursor.E_RESIZE);
-        else if(verticalEdge)
-            getStage().getScene().setCursor(Cursor.S_RESIZE);
-        else
+        //only a mouse move over of the root view (ie: not text box, buttons, etc)
+        //will be used for a resize or window drag. Everything else is ignored
+        if(event.getSource().equals(rootView)) {
+            //compute if we are within resizing distance of the right side and bottom of the
+            //window
+            horizontalEdge = getStage().getWidth() - event.getSceneX() <= RESIZE_BUFFER;
+            verticalEdge = getStage().getHeight() - event.getSceneY() <= RESIZE_BUFFER;
+
+            //change the cursor based on if we are close enough to resize horizontally/vertically
+            if (horizontalEdge && verticalEdge)
+                getStage().getScene().setCursor(Cursor.SE_RESIZE);
+            else if (horizontalEdge)
+                getStage().getScene().setCursor(Cursor.E_RESIZE);
+            else if (verticalEdge)
+                getStage().getScene().setCursor(Cursor.S_RESIZE);
+        }
+        //else the mouse move was over a component other than the root VBox
+        else {
+            horizontalEdge = false;
+            verticalEdge = false;
             getStage().getScene().setCursor(Cursor.DEFAULT);
+        }
     }
 
     /**
@@ -186,6 +204,8 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         dragDelta.X = event.getSceneX();
         dragDelta.Y = event.getSceneY();
     }
+
+    private long mouseMoves = 0;
 
     @FXML
     private void onMouseDragged(MouseEvent event) {

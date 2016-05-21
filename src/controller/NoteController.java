@@ -80,6 +80,21 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         note.setColor(color);
     }
 
+    @Override
+    public void exitAllNotes() {
+        //TODO: Get the Note Master List to exit all notes
+    }
+
+    @Override
+    public void setKeepOnTop(boolean keepOnTop) {
+        this.getStage().setAlwaysOnTop(keepOnTop);
+    }
+
+    @Override
+    public void viewAllNotes() {
+        //TODO: Get the note master list to open everything
+    }
+
     /**
      * Sets the color of ONLY the window, not the note that I own. This is for when we load a note, we want
      * to set my color to match the note, but without also setting the note's color as would be done by the setColor() method

@@ -165,7 +165,7 @@ public class Database {
                                 COLUMN_TITLE +      " TEXT, " +
                                 COLUMN_CONTENT +    " TEXT, " +
                                 COLUMN_DATE_SAVED + " DATE, " +
-                                COLUMN_OPEN       + " BOOLEAN " +
+                                COLUMN_OPEN       + " TEXT, " +
                                 COLUMN_COLOR      + " TEXT " +
                                 ")";
         statement.executeUpdate(createNotesTable);

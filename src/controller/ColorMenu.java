@@ -27,6 +27,7 @@ public class ColorMenu extends ContextMenu {
 
         //Should cause the NotesListController to show all the notes
         MenuItem viewAllNotes = new MenuItem("View All Notes");
+        viewAllNotes.setOnAction(event -> listener.viewAllNotes());
         getItems().add(viewAllNotes);
 
         getItems().add(new SeparatorMenuItem());
@@ -38,6 +39,7 @@ public class ColorMenu extends ContextMenu {
 
         //Should cause the noteslistcontroller to exit all notes
         MenuItem exitAll = new MenuItem("Exit All Notes");
+        exitAll.setOnAction(event -> listener.exitAllNotes());
         getItems().add(exitAll);
 
         this.listener = listener;

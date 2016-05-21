@@ -58,11 +58,8 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private TextField tfNoteTitle;
 
     /**
-     * Checkbox that says whether or not we should keep this window on top
+     * The context menu that shows
      */
-    @FXML
-    private CheckBox cbKeepOnTop;
-
     private ColorMenu colorMenu = new ColorMenu(this);
 
     @Override
@@ -85,14 +82,21 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         //TODO: Get the Note Master List to exit all notes
     }
 
+    /**
+     * Toggles whether this view should be kept on top of all other windows
+     * @param keepOnTop
+     */
     @Override
     public void setKeepOnTop(boolean keepOnTop) {
         this.getStage().setAlwaysOnTop(keepOnTop);
     }
 
+    /**
+     * Displays the master notes window
+     */
     @Override
     public void viewAllNotes() {
-        //TODO: Get the note master list to open everything
+        showNotesList();
     }
 
     /**
@@ -133,11 +137,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         getStage().setY(event.getScreenY() + dragStageDelta.Y);
 
         event.consume();
-    }
-
-    @FXML
-    private void toggleKeepOnTop(ActionEvent e) {
-        getStage().setAlwaysOnTop(cbKeepOnTop.isSelected());
     }
 
     /**

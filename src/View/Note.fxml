@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.Image?>
@@ -10,9 +9,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minWidth="400.0" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NoteController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minWidth="400.0" onMouseExited="#onMouseExit" onMouseMoved="#onMouseMoved" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NoteController">
    <children>
-      <HBox id="topbar" onMouseDragged="#dragStage" onMousePressed="#startDrag" prefWidth="200.0" styleClass="topbar">
+      <HBox id="topbar" onMouseDragged="#dragStage" onMouseMoved="#onMouseMoved" onMousePressed="#startDrag" prefWidth="200.0" styleClass="topbar">
          <children>
             <Button mnemonicParsing="false" onAction="#addNewNote">
                <graphic>
@@ -28,7 +27,7 @@
                   <Insets right="16.0" top="4.0" />
                </HBox.margin>
             </TextField>
-            <Button mnemonicParsing="false" onAction="#closeStage">
+            <Button mnemonicParsing="false" onAction="#closeStage" onMouseMoved="#onMouseMoved">
                <graphic>
                   <ImageView fitHeight="150.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -36,17 +35,18 @@
                      </image>
                   </ImageView>
                </graphic>
+               <HBox.margin>
+                  <Insets right="8.0" />
+               </HBox.margin>
             </Button>
          </children>
          <padding>
             <Insets top="4.0" />
          </padding>
       </HBox>
-      <TextArea fx:id="taNoteContent" prefHeight="200.0" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS" />
-      <HBox nodeOrientation="RIGHT_TO_LEFT" onMouseDragged="#resize" onMousePressed="#startResize" prefWidth="200.0" VBox.vgrow="NEVER">
-         <children>
-            <Separator opacity="0.0" prefHeight="0.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
-         </children>
-      </HBox>
+      <TextArea fx:id="taNoteContent" prefHeight="200.0" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS">
+         <VBox.margin>
+            <Insets bottom="8.0" left="8.0" right="8.0" />
+         </VBox.margin></TextArea>
    </children>
 </VBox>

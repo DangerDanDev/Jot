@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Cursor;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.TextArea;
@@ -152,50 +153,65 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     }
 
     /**
-     * When dragging on the bottom-end toolbar, this variable is used to determine whether hte mouse is clsoe enough to cause the
-     * window to be resized horizontally
-     */
-    boolean horizontalDrag = false;
-
-    /**
-     * When dragging on the bottom-end toolbar, this variable is used to determine whether hte mouse is clsoe enough to cause the
-     * window to be resized horizontally
-     */
-    boolean verticalDrag = false;
-
-    /**
      * The distance the mouse must be from the border of a window
      * to allow resizing
      */
     final int RESIZE_BUFFER = 10;
 
     /**
-     * Resizes the stage based on the mouses's screen location (during a drag) relative to the scene's
-     * screen location.
-     * @param event
+     * Whether or not the mouse is close enough to trigger a horizontal resize
+     */
+    private boolean horizontalEdge = false;
+
+    /**
+     * Whether or not the mouse is close enough to trigger a horizontal resize
+     */
+    private boolean verticalEdge = false;
+
+    /**
+     * Called for mousemovements on the scene's root VBox
+     * Detects whether the mouse is close enough to the horizontal vertical edges to
+     * show the resize cursor
      */
     @FXML
-    private void resize(MouseEvent event) {
-        //if we are horizontal dragging, set the stage size to which ever is GREATER:
-        //the minimum width or the dragged width
-        if(horizontalDrag)
-            getStage().setWidth(Math.max(MINIMUM_WIDTH, event.getScreenX() - getStage().getX()));
+    private void onMouseMoved(MouseEvent event) {
+        //compute if we are within resizing distance of the right side and bottom of the
+        //window
+        horizontalEdge = getStage().getWidth() - event.getSceneX() <= RESIZE_BUFFER;
+        verticalEdge = getStage().getHeight() - event.getSceneY() <= RESIZE_BUFFER;
 
-        //if we are vertical dragging, set the stage size to which ever is GREATER:
-        //the minimum height or the dragged height
-        if(verticalDrag)
-            getStage().setHeight(Math.max(MINIMUM_HEIGHT, event.getScreenY() - getStage().getY()));
+        //change the cursor based on if we are close enough to resize horizontally/vertically
+        if(horizontalEdge && verticalEdge)
+            getStage().getScene().setCursor(Cursor.SE_RESIZE);
+        else if(horizontalEdge)
+            getStage().getScene().setCursor(Cursor.E_RESIZE);
+        else if(verticalEdge)
+            getStage().getScene().setCursor(Cursor.S_RESIZE);
+        else
+            getStage().getScene().setCursor(Cursor.DEFAULT);
     }
 
     /**
-     * Sets the horizontalDrag and verticalDrag variables, to determine in which
-     * way(s) the window will be resized
+     * Called when the mouse exit's the scenes root VBox
+     * Detects when the mouse leaves the window
      * @param event
      */
     @FXML
-    private void startResize(MouseEvent event) {
-        horizontalDrag = getStage().getWidth() - event.getSceneX() <= RESIZE_BUFFER;
-        verticalDrag = (getStage().getHeight() - event.getSceneY() <= RESIZE_BUFFER);
+    private void onMouseExit(MouseEvent event) {
+        horizontalEdge = false;
+        verticalEdge = false;
+
+        getStage().getScene().setCursor(Cursor.DEFAULT);
+    }
+
+    /**
+     * Called when the mouse moves over the exit button; same stuff happens as when the mouse is moved
+     * in the scene, so we pass through to that method
+     * @param event
+     */
+    @FXML
+    private void onMouseEnterExitButton(MouseEvent event) {
+        onMouseMoved(event);
     }
 
     /**

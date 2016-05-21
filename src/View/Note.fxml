@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minWidth="400.0" onMouseExited="#onMouseExit" onMouseMoved="#onMouseMoved" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NoteController">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minWidth="400.0" onMouseDragged="#onMouseDragged" onMouseExited="#onMouseExit" onMouseMoved="#onMouseMoved" onMousePressed="#onMouseDragStarted" prefHeight="400.0" prefWidth="600.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.NoteController">
    <children>
-      <HBox id="topbar" onMouseDragged="#dragStage" onMouseMoved="#onMouseMoved" onMousePressed="#startDrag" prefWidth="200.0" styleClass="topbar">
+      <HBox id="topbar" onMouseMoved="#onMouseMoved" prefWidth="200.0" styleClass="topbar">
          <children>
             <Button mnemonicParsing="false" onAction="#addNewNote">
                <graphic>

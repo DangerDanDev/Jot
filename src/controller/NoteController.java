@@ -123,36 +123,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     }
 
     /**
-     * The mouse coordinates relative to the stage
-     */
-    private Delta dragStageDelta = new Delta();
-
-    /**
-     * Used to drag the stage around the screen
-     * @param event
-     */
-    @FXML
-    private void dragStage(MouseEvent event) {
-        //drag the stage, taking into account the mouse's original relative position
-        getStage().setX(event.getScreenX() + dragStageDelta.X);
-        getStage().setY(event.getScreenY() + dragStageDelta.Y);
-
-        event.consume();
-    }
-
-    /**
-     * Prior to dragging the stage around, we need to know the mouse co-ordinates relative
-     * to the stage. This event handler does just that. This is called once-- the first time the mouse is pressed-- per drag gesture
-     * @param event
-     */
-    @FXML
-    private void startDrag(MouseEvent event) {
-        //get the mouse position relative to the scene
-        dragStageDelta.X = -event.getSceneX();
-        dragStageDelta.Y = -event.getSceneY();
-    }
-
-    /**
      * The distance the mouse must be from the border of a window
      * to allow resizing
      */
@@ -169,7 +139,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private boolean verticalEdge = false;
 
     /**
-     * Called for mousemovements on the scene's root VBox
+     * Called for mousemovements on the scene-- root VBox, top HBox, and exit button
      * Detects whether the mouse is close enough to the horizontal vertical edges to
      * show the resize cursor
      */
@@ -192,26 +162,53 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     }
 
     /**
-     * Called when the mouse exit's the scenes root VBox
+     * Called when the mouse exit's the scenes root VBox, top HBox, and exit button
      * Detects when the mouse leaves the window
      * @param event
      */
     @FXML
     private void onMouseExit(MouseEvent event) {
-        horizontalEdge = false;
-        verticalEdge = false;
+        //horizontalEdge = false;
+        //verticalEdge = false;
 
-        getStage().getScene().setCursor(Cursor.DEFAULT);
+        //getStage().getScene().setCursor(Cursor.DEFAULT);
     }
 
+    private Delta dragDelta = new Delta();
+
     /**
-     * Called when the mouse moves over the exit button; same stuff happens as when the mouse is moved
-     * in the scene, so we pass through to that method
+     * Called when a mouse dragged starts (onMousePressed)
+     * Sets the drag delta's initial ever
      * @param event
      */
     @FXML
-    private void onMouseEnterExitButton(MouseEvent event) {
-        onMouseMoved(event);
+    private void onMouseDragStarted(MouseEvent event) {
+        dragDelta.X = event.getSceneX();
+        dragDelta.Y = event.getSceneY();
+    }
+
+    @FXML
+    private void onMouseDragged(MouseEvent event) {
+
+        //if we are reszing X & Y coordinates, the size should be equal to the difference
+        //between the window's position and the mouse's position
+        if(horizontalEdge && verticalEdge) {
+            getStage().setWidth(Math.max(event.getSceneX() - getStage().getScene().getX(), MINIMUM_WIDTH));
+            getStage().setHeight(Math.max(event.getSceneY() - getStage().getScene().getY(), MINIMUM_HEIGHT));
+        }
+        //for only resizing width-wise
+        else if(horizontalEdge) {
+            getStage().setWidth(Math.max(event.getSceneX() - getStage().getScene().getX(), MINIMUM_WIDTH));
+        }
+        //only resizing height
+        else if(verticalEdge) {
+            getStage().setHeight(Math.max(event.getSceneY() - getStage().getScene().getY(), MINIMUM_HEIGHT));
+        }
+        //if we aren't resizing it means the window is being dragged
+        else {
+            getStage().setX(event.getScreenX() - dragDelta.X);
+            getStage().setY(event.getScreenY() - dragDelta.Y);
+        }
     }
 
     /**

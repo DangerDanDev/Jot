@@ -1,5 +1,6 @@
 import Model.Database;
 import View.ViewLoader;
+import controller.NoteController;
 import controller.NotesListController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +20,8 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Database db = Database.getInstance();
-        NotesListController masterController = NotesListController.getInstance();
+        //NotesListController masterController = NotesListController.getInstance();
+        NoteController controller = new NoteController(db.getNotes().get(0));
     }
 
 

@@ -2,13 +2,16 @@ package controller;
 
 import Model.Note;
 import Model.NoteListListener;
+import View.ViewLoader;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.scene.Cursor;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.ContextMenuEvent;
 import javafx.scene.input.MouseButton;
@@ -20,6 +23,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -37,11 +41,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      * The note that I'm responsible for
      */
     private Note note;
-
-    /**
-     * The NoteManager object whom I notify when the user clicks the "new note" button
-     */
-    private NoteListListener listener;
 
     /**
      * The root view of the note window
@@ -71,6 +70,24 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      * The context menu that shows
      */
     private ColorMenu colorMenu = new ColorMenu(this);
+
+    public NoteController(Note note) {
+        try {
+            FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("Note.fxml"));
+            loader.setController(this);
+            rootView = loader.load();
+
+            setStage(new Stage());
+            getStage().setScene(new Scene(rootView, 400,300));
+            setNote(note);
+            getStage().show();
+        }
+        catch (IOException e) {
+            System.out.println("Error instantiating Note Controller: " );
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -127,7 +144,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      * Exits the stage holding the note
      */
     public void closeStage() {
-        getListener().noteClosed(this);
         getStage().close();
     }
 
@@ -237,7 +253,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private void addNewNote() {
-        listener.addNewNote();
+        //TODO: Notify the notes manager of the new note that must be opened
     }
 
     @FXML
@@ -251,10 +267,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
 
     public void setStage(Stage stage) {
         this.stage = stage;
-
-        stage.setOnCloseRequest(event -> {
-            getListener().noteClosed(this);
-        });
     }
 
     /**
@@ -262,7 +274,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private void showNotesList() {
-        getListener().showNotesList();
+        //TODO: Show the master notes list
     }
 
     public Note getNote() {
@@ -296,7 +308,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
             note.setTitle(tfNoteTitle.getText());
-            getListener().noteChanged(note);
+            //TODO: notify the notes-manager of the change in name
         }
     }
 
@@ -307,14 +319,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
             note.setText(taNoteContent.getText());
         }
-    }
-
-    public NoteListListener getListener() {
-        return listener;
-    }
-
-    public void setListener(NoteListListener listener) {
-        this.listener = listener;
     }
 
     /************************************************

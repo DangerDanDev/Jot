@@ -345,12 +345,12 @@ public class NotesListController implements Initializable, NoteListListener {
 
     public void addController(NoteController controller) {
         controllers.add(controller);
-        controller.setListener(this);
+        //TODO: remove this method when it is safe. The NotesManager object will thusly manage new notes
     }
 
     public void removeController(NoteController controller) {
         controllers.remove(controller);
-        controller.setListener(null);
+        //TODO: Remove this method when it is safe. The NotesManager will manage new notes in the future
     }
 
     public void setStage(Stage stage) {

@@ -219,6 +219,16 @@ public class Note {
             executor.queueNote(this);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        //if our IDs are the same, we're the same note!
+        if(obj instanceof Note) {
+            Note note = (Note)obj;
+            return this.id == note.id;
+        } else {
+            return super.equals(obj);
+        }
+    }
 
     public boolean isOpen() {
         return this.open;

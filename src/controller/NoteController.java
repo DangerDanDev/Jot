@@ -1,6 +1,7 @@
 package controller;
 
 import Model.Note;
+import Model.NoteControllerHost;
 import Model.NoteListListener;
 import Model.WindowManager;
 import View.ViewLoader;
@@ -68,12 +69,19 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private Button bDrag;
 
     /**
+     * The class that will manage me, and when requested, create new notes for me
+     */
+    private NoteControllerHost host;
+
+    /**
      * The context menu that shows
      */
     private ColorMenu colorMenu = new ColorMenu(this);
 
-    public NoteController(Note note) {
+    public NoteController(Note note, NoteControllerHost host) {
         try {
+            this.setHost(host);
+
             FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("Note.fxml"));
             loader.setController(this);
             rootView = loader.load();
@@ -255,6 +263,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     @FXML
     private void addNewNote() {
         //TODO: Notify the notes manager of the new note that must be opened
+        getHost().createNote();
     }
 
     @FXML
@@ -268,6 +277,14 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public NoteControllerHost getHost() {
+        return host;
+    }
+
+    public void setHost(NoteControllerHost host) {
+        this.host = host;
     }
 
     /**

@@ -2,6 +2,7 @@ package controller;
 
 import Model.Note;
 import Model.NoteListListener;
+import Model.WindowManager;
 import View.ViewLoader;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,7 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class NoteController implements Initializable, ColorMenu.ColorMenuListener{
+public class NoteController implements Initializable, ColorMenu.ColorMenuListener, WindowManager.Window{
 
     public static final int MINIMUM_WIDTH = 255;
     public static final int MINIMUM_HEIGHT = 125;

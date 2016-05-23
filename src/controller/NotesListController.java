@@ -3,6 +3,7 @@ package controller;
 import Model.Database;
 import Model.Note;
 import Model.NoteListListener;
+import Model.WindowManager;
 import View.ViewLoader;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;

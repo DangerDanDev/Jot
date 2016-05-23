@@ -1,4 +1,5 @@
 import Model.Database;
+import Model.WindowManager;
 import View.ViewLoader;
 import controller.NoteController;
 import controller.NotesListController;
@@ -21,8 +22,6 @@ public class App extends Application {
     public void start(Stage primaryStage) throws Exception {
         Database db = Database.getInstance();
         //NotesListController masterController = NotesListController.getInstance();
-        NoteController controller = new NoteController(db.getNotes().get(0));
+        WindowManager manager = new WindowManager();
     }
-
-
 }

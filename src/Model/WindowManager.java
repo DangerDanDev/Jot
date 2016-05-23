@@ -3,7 +3,6 @@ package Model;
 import controller.NoteController;
 import controller.NotesListController;
 import javafx.event.EventHandler;
-import javafx.scene.chart.PieChart;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -25,11 +24,19 @@ public class WindowManager implements NoteControllerHost{
      */
     private ArrayList<Window> windows = new ArrayList<>();
 
+    private NotesListController notesListController;
+
     /**
      * Loads all notes from the database, and shows them all at once
      */
     public WindowManager() {
         ArrayList<Note> notes = Database.getInstance().getNotes();
+
+        notesListController = new NotesListController(this);
+        notesListController.getStage().setOnHidden(event -> {
+            if(allWindowsClosed())
+                exit();
+        });
 
         for(Note note : notes) {
             showNote(note);
@@ -38,7 +45,7 @@ public class WindowManager implements NoteControllerHost{
 
     /**
      * Shows a note. This is accomplished by instantiating a NoteController, adding the note to our tracking list, and the
-     * controller to our tracking list as well.
+     * notesListController to our tracking list as well.
      * @param note
      */
     public void showNote(Note note) {
@@ -69,7 +76,30 @@ public class WindowManager implements NoteControllerHost{
      */
     @Override
     public void showNotesList() {
-        //TODO: Show the note window
+        //If the notes list is not already showing,s how it
+        if(!notesListController.getStage().isShowing())
+            notesListController.getStage().show();
+        //if it was showing, bring it to front
+        else
+            notesListController.getStage().toFront();
+    }
+
+    @Override
+    public void deleteNote(Note note) {
+        //TODO: Delete the note from the database
+    }
+
+    /**
+     *
+     * @return True if all notes are closed and the noteListController's window is not visible; ie: No windows are open
+     */
+    private boolean allWindowsClosed() {
+        return openNotes.size() == 0 && !notesListController.getStage().isShowing();
+    }
+
+    private void exit() {
+        Database.getInstance().close();
+        System.exit(0);
     }
 
     /**
@@ -99,7 +129,7 @@ public class WindowManager implements NoteControllerHost{
 
         /**
          * Removes my note and the NoteController from the tracking lists.
-         * If they were the last ones open, the database closes and the program exits.
+         * If There are no windows left open, the database closes and the program exits.
          * @param event
          */
         @Override
@@ -107,13 +137,10 @@ public class WindowManager implements NoteControllerHost{
             windows.remove(windows.get(openNotes.indexOf(note)));
             openNotes.remove(note);
 
-            System.out.println("Remaining notes: " + openNotes.size());
-            System.out.println("Remaining note windows: " + windows.size());
-
-            if(openNotes.size() == 0) {
-                Database.getInstance().close();
-                System.exit(0);
-            }
+            //check if all windows are closed
+            //if so, exit the program
+            if(allWindowsClosed())
+                exit();
         }
     }
 

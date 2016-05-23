@@ -292,7 +292,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private void showNotesList() {
-        //TODO: Show the master notes list
+        host.showNotesList();
     }
 
     public Note getNote() {

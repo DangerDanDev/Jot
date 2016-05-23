@@ -1,9 +1,6 @@
 package controller;
 
-import Model.Database;
-import Model.Note;
-import Model.NoteListListener;
-import Model.WindowManager;
+import Model.*;
 import View.ViewLoader;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -42,9 +39,6 @@ import java.util.ResourceBundle;
  */
 public class NotesListController implements Initializable, NoteListListener {
 
-    private static NotesListController instance = new NotesListController();
-    public static NotesListController getInstance() { return instance; }
-
     private Stage stage;
 
     private ArrayList<NoteController> controllers = new ArrayList<>();
@@ -70,40 +64,41 @@ public class NotesListController implements Initializable, NoteListListener {
     private Button bAddNote;
 
     /**
-     * Private constructor because this is a singleton class!
+     * The object that handles showing of notes
      */
-    private NotesListController() {
-        setStage(createWindow());
-
-        getStage().setOnCloseRequest(event -> onWindowClosed(event));
-    }
-
+    private NoteControllerHost host;
 
     /**
-     * When the window is closed, we set the stage to null
-     * and check to see if all other windows are closed as well.
-     * if all other windows are closed, we close the database.
-     * @param event
+     * Private constructor because this is a singleton class!
      */
-    public void onWindowClosed(WindowEvent event) {
-        if(controllers.size() == 0) {
-            setStage(null);
-            Database.getInstance().close();
-            System.exit(0);
+/*    //private NotesListController() {
+     //   setStage(createWindow());
+//
+ //       getStage().setOnCloseRequest(event -> onWindowClosed(event));
+  //  }*/
+
+
+    public NotesListController(NoteControllerHost host) {
+        try {
+
+            FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("NotesList.fxml"));
+            loader.setController(this);
+            Parent root = loader.load();
+
+            setStage(new Stage());
+            getStage().setScene(new Scene(root, 400, 300));
+
+            setHost(host);
+        } catch (IOException e) {
+            System.out.println("There was an error loading the master notes list.");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        //get all the notes from the database!
-        notes = Database.getInstance().getNotes();
-
-        //prepare the table to display all the initial notes
         initTable();
-
-        //
-        setNotes(notes);
     }
 
     /**
@@ -142,7 +137,7 @@ public class NotesListController implements Initializable, NoteListListener {
             bDeleteNote.setDisable(nothingSelected);
             bOpenNote.setDisable(nothingSelected);
         });
-    }
+    } //initTable()
 
     /**
      * Sets my reference to the list of all notes in the database.
@@ -360,6 +355,14 @@ public class NotesListController implements Initializable, NoteListListener {
 
     public Stage getStage() {
         return this.stage;
+    }
+
+    public NoteControllerHost getHost() {
+        return host;
+    }
+
+    public void setHost(NoteControllerHost host) {
+        this.host = host;
     }
 
     /**

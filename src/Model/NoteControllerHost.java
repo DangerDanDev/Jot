@@ -16,6 +16,17 @@ public interface NoteControllerHost {
     void deleteNote(Note note);
 
     /**
+     * Closes all open notes
+     */
+    void exitAllNotes();
+
+    /**
+     * Show a specific note
+     * @param note
+     */
+    void showNote(Note note);
+
+    /**
      * Show the notes list
      */
     void showNotesList();

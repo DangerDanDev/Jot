@@ -2,25 +2,19 @@ package controller;
 
 import Model.Note;
 import Model.NoteControllerHost;
-import Model.NoteListListener;
 import Model.WindowManager;
 import View.ViewLoader;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.input.ContextMenuEvent;
-import javafx.scene.input.MouseButton;
+import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -89,7 +83,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
             setStage(new Stage());
             getStage().setScene(new Scene(rootView, 400,300));
             setNote(note);
-            getStage().show();
         }
         catch (IOException e) {
             System.out.println("Error instantiating Note Controller: " );
@@ -115,7 +108,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
 
     @Override
     public void exitAllNotes() {
-        //TODO: Get the Note Master List to exit all notes
+        getHost().exitAllNotes();
     }
 
     /**
@@ -262,7 +255,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private void addNewNote() {
-        //TODO: Notify the notes manager of the new note that must be opened
         getHost().createNote();
     }
 

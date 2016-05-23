@@ -37,11 +37,9 @@ import java.util.ResourceBundle;
 /**
  * Created by scyth on 4/23/2016.
  */
-public class NotesListController implements Initializable, NoteListListener {
+public class NotesListController implements Initializable {
 
     private Stage stage;
-
-    private ArrayList<NoteController> controllers = new ArrayList<>();
 
     private ArrayList<Note> notes = new ArrayList<>();
 
@@ -88,6 +86,7 @@ public class NotesListController implements Initializable, NoteListListener {
             setStage(new Stage());
             getStage().setScene(new Scene(root, 400, 300));
 
+            setNotes(Database.getInstance().getNotes());
             setHost(host);
         } catch (IOException e) {
             System.out.println("There was an error loading the master notes list.");
@@ -111,16 +110,7 @@ public class NotesListController implements Initializable, NoteListListener {
             //event listener for double clicking on an item in the table
             cell.addEventFilter(MouseEvent.MOUSE_CLICKED,event -> {
                 if(event.getClickCount() == 2) {
-                    //if the cell was double clicked, blegh a blegh, and the note
-                    //is NOT already open, we open it.
-                    if(!table.getSelectionModel().getSelectedItem().isOpen())
-                        showNote(table.getSelectionModel().getSelectedItem());
-                    //otherwise find the controller who manages the note we want
-                    else
-                        for(NoteController noteCont : controllers)
-                            //and we bring that note to the front
-                            if(noteCont.getNote() == table.getSelectionModel().getSelectedItem())
-                                noteCont.getStage().toFront();
+                    host.showNote(table.getItems().get(cell.getIndex()));
                 }
             });
 
@@ -139,6 +129,10 @@ public class NotesListController implements Initializable, NoteListListener {
         });
     } //initTable()
 
+    public void refresh() {
+        table.refresh();
+    }
+
     /**
      * Sets my reference to the list of all notes in the database.
      * @param notes
@@ -150,22 +144,30 @@ public class NotesListController implements Initializable, NoteListListener {
         table.getItems().addAll(notes);
     }
 
-    public void addNote(Note note) {
-        this.notes.add(note);
+    /**
+     * Instructs my host to instantiate and create a new note
+     */
+    @FXML
+    public void addNote() {
+        getHost().createNote();
+    }
 
-        table.getItems().add(note);
+    /**
+     * Instructs my host to show the currently selected note from the table
+     */
+    @FXML
+    public void showNote() {
+        if(table.getSelectionModel().getSelectedItem() != null)
+            getHost().showNote(table.getSelectionModel().getSelectedItem());
     }
 
     /**
      * Removes a note from my tracked arraylist of notes, the notes table items list,
      * and from the database
-     * @param note
      */
-    public void removeNote(Note note) {
-        this.notes.remove(note);
-
-        table.getItems().remove(note);
-        Database.getInstance().deleteNote(note);
+    @FXML
+    public void deleteSelectedNote() {
+        getHost().deleteNote(table.getSelectionModel().getSelectedItem());
     }
 
     public class NoteTitleCell extends TableCell<Note, String> {
@@ -202,153 +204,6 @@ public class NotesListController implements Initializable, NoteListListener {
         }
     }
 
-    /**
-     * Creates a window for a new note, and sets the window controller's note
-     * to be the note passed in as a parameter
-     * @param note The note that the window will show
-     * @return
-     */
-    public void showNote(Note note) {
-
-        //Creates a new note window
-        NoteController controller = createNoteWindow();
-
-        //Instantiate the controller's note
-        controller.setNote(note);
-
-        note.setOpen(true);
-
-    } //showNote(Note note);
-
-    /**
-     * Adds a new blank note window
-     */
-    public NoteController createNoteWindow() {
-
-        try {
-            //instantiate our stage
-            Stage stage = new Stage();
-
-            //Load the actual scene. We don't know what control/container will be the root (since that may change),
-            //so we load it as a Parent object
-            FXMLLoader loader = new FXMLLoader(new ViewLoader().getClass().getResource("Note.fxml"));
-            VBox root = loader.load();
-
-            //get the controller, let it know what window it's managing,
-            //add me as it's listener for when the "new note button" is clicked,
-            //and add it to my list of tracked controllers
-            NoteController controller = loader.getController();
-            controller.setStage(stage);
-            addController(controller);
-
-            //finally create the scene/window and set it's title
-            stage.getIcons().add(new Image("/Content/icon.png"));
-            stage.setScene(new Scene(root, 350, 225));
-            stage.setTitle("");
-            stage.initStyle(StageStyle.TRANSPARENT);
-            stage.show();
-
-            return controller;
-
-        } catch (IOException ex) {
-            JOptionPane.showMessageDialog(null, "Could not open FXML File: " + "Note.fxml.");
-            return null;
-        }
-    } //createNoteWindow
-
-    /**
-     * OVERRIDES NoteController.NoteControllerListener.noteClosed();
-     * @param c
-     */
-    @Override
-    public void noteClosed(NoteController c) {
-        removeController(c);
-
-        System.out.println("Open notes: " + controllers.size());
-
-        //If the master notes window and all child note windows
-        //are closed, the program is exiting. Close the database.
-        if(controllers.size() == 0 && !getStage().isShowing()) {
-            Database.getInstance().close();
-            System.exit(0);
-        }
-
-        c.getNote().close();
-    }
-
-    /**
-     * Calls Database.getInstance().newNote() to create a new note
-     * in the database, and passes the new note into the showNote(Note note) method
-     * to have it create a window/controller.
-     * OVERRIDES NoteController.NoteControllerListener.addNewNote();
-     */
-    @Override
-    public void addNewNote() {
-        try {
-            Note note = Database.getInstance().newNote();
-
-            showNote(note);
-
-            addNote(note);
-            //setNotes(Database.getInstance().getNotes());
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    @FXML
-    private void deleteNote() {
-        Note note = table.getSelectionModel().getSelectedItem();
-
-        if(note != null) {
-            System.out.println("Note is open: " + note.isOpen());
-
-            //If the note is open, close that baby!
-            if(note.isOpen())
-                note.getController().closeStage();
-
-            //Delete the note!
-            removeNote(note);
-        }
-    }
-
-    /**
-     * From interface NoteListListener.
-     * Shows my stage, and brings it to the front
-     */
-    @Override
-    public void showNotesList() {
-        getStage().show();
-        getStage().toFront();
-    }
-
-    @Override
-    public void noteChanged(Note note) {
-        table.refresh();
-    }
-
-    /**
-     * Opens whatever note is currently selected on the notes table
-     */
-    @FXML
-    private void openSelectedNote() {
-        Note note = table.getSelectionModel().getSelectedItem();
-
-        //Only open the note if it is not already open
-        if(!note.isOpen())
-            showNote(table.getSelectionModel().getSelectedItem());
-    }
-
-    public void addController(NoteController controller) {
-        controllers.add(controller);
-        //TODO: remove this method when it is safe. The NotesManager object will thusly manage new notes
-    }
-
-    public void removeController(NoteController controller) {
-        controllers.remove(controller);
-        //TODO: Remove this method when it is safe. The NotesManager will manage new notes in the future
-    }
-
     public void setStage(Stage stage) {
         this.stage = stage;
     }
@@ -364,29 +219,5 @@ public class NotesListController implements Initializable, NoteListListener {
     public void setHost(NoteControllerHost host) {
         this.host = host;
     }
-
-    /**
-     * Loads and shows the window that contains all previously edited notes
-     */
-    public Stage createWindow() {
-        try {
-            FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("NotesList.fxml"));
-            loader.setController(this);
-            Parent root = loader.load();
-
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root, 300, 300));
-            setStage(stage);
-            stage.show();
-
-            return stage;
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
 
 }

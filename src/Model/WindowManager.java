@@ -30,17 +30,14 @@ public class WindowManager implements NoteControllerHost{
      * Loads all notes from the database, and shows them all at once
      */
     public WindowManager() {
-        ArrayList<Note> notes = Database.getInstance().getNotes();
-
         notesListController = new NotesListController(this);
+        notesListController.getStage().show();
         notesListController.getStage().setOnHidden(event -> {
+            System.out.println("Notes List hidden");
+
             if(allWindowsClosed())
                 exit();
         });
-
-        for(Note note : notes) {
-            showNote(note);
-        }
     }
 
     /**
@@ -49,11 +46,23 @@ public class WindowManager implements NoteControllerHost{
      * @param note
      */
     public void showNote(Note note) {
-        NoteController noteController = new NoteController(note,this);
-        openNotes.add(note);
-        windows.add(noteController);
+        //we only want to show the note in a new window if it is
+        //not already open.
+        if(!openNotes.contains(note)) {
 
-        noteController.getStage().setOnHidden(new CloseNoteListener(note, noteController));
+            NoteController noteController = new NoteController(note, this);
+            noteController.getStage().show();
+
+            openNotes.add(note);
+            windows.add(noteController);
+
+            //hook up the listener that tracks when notes are closed
+            noteController.getStage().setOnHidden(new CloseNoteListener(note, noteController));
+        } //if !openNotes.contains(note)
+        //otherwise we want to bring it to the front, as it is already open
+        else {
+            windows.get(openNotes.indexOf(note)).getStage().toFront();
+        }
     }
 
     /**
@@ -86,7 +95,20 @@ public class WindowManager implements NoteControllerHost{
 
     @Override
     public void deleteNote(Note note) {
-        //TODO: Delete the note from the database
+        Database.getInstance().deleteNote(note);
+    }
+
+    @Override
+    public void exitAllNotes() {
+        for(Window window : windows)
+            window.getStage().hide();
+
+        windows.clear();
+        openNotes.clear();
+    }
+
+    private void onNotesListChanged() {
+        notesListController.refresh();
     }
 
     /**

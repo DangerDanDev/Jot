@@ -10,9 +10,9 @@
    <children>
       <ToolBar nodeOrientation="RIGHT_TO_LEFT" prefHeight="40.0" prefWidth="200.0">
         <items>
-            <Button fx:id="bDeleteNote" disable="true" mnemonicParsing="false" onAction="#deleteNote" text="Delete" />
-          <Button fx:id="bOpenNote" disable="true" mnemonicParsing="false" onAction="#openSelectedNote" text="Open" />
-            <Button fx:id="bAddNote" mnemonicParsing="false" onAction="#addNewNote" text="Add" />
+            <Button fx:id="bDeleteNote" disable="true" mnemonicParsing="false" onAction="#deleteSelectedNote" text="Delete" />
+          <Button fx:id="bOpenNote" disable="true" mnemonicParsing="false" onAction="#showNote" text="Open" />
+            <Button fx:id="bAddNote" mnemonicParsing="false" onAction="#addNote" text="Add" />
         </items>
       </ToolBar>
       <TableView fx:id="table" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">

@@ -67,16 +67,29 @@ public class WindowManager implements NoteControllerHost{
 
     /**
      * Creates and shows a brand new note, instantiated directly from the database
+     * and calls onNotesDatabaseChanged()
      */
     @Override
     public void createNote() {
         try {
             showNote(Database.getInstance().newNote());
+            onNotesDatabaseChanged();
         } catch(SQLException ex) {
             System.out.println("Error creating a new note");
             System.out.println(ex.getMessage());
             ex.printStackTrace();
         }
+    }
+
+    /**
+     * Deletes a note from the database and calls
+     * onNotesDatabaseChanged
+     * @param note
+     */
+    @Override
+    public void deleteNote(Note note) {
+        Database.getInstance().deleteNote(note);
+        onNotesDatabaseChanged();
     }
 
     /**
@@ -94,11 +107,6 @@ public class WindowManager implements NoteControllerHost{
     }
 
     @Override
-    public void deleteNote(Note note) {
-        Database.getInstance().deleteNote(note);
-    }
-
-    @Override
     public void exitAllNotes() {
         for(Window window : windows)
             window.getStage().hide();
@@ -107,8 +115,11 @@ public class WindowManager implements NoteControllerHost{
         openNotes.clear();
     }
 
-    private void onNotesListChanged() {
-        notesListController.refresh();
+    /**
+     * Notifies the notes list window that the database has changed, so it can re-query the database
+     */
+    private void onNotesDatabaseChanged() {
+        notesListController.reload();
     }
 
     /**

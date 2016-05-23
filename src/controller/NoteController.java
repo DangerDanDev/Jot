@@ -18,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 import java.net.URL;
@@ -80,7 +81,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
             loader.setController(this);
             rootView = loader.load();
 
-            setStage(new Stage());
+            setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
             setNote(note);
         }

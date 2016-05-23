@@ -129,8 +129,18 @@ public class NotesListController implements Initializable {
         });
     } //initTable()
 
+    /**
+     * Called when a note's name changes; this updates the table's listing
+     */
     public void refresh() {
         table.refresh();
+    }
+
+    /**
+     * Called when the notes database has changed. Forces a re-query of the database
+     */
+    public void reload() {
+        setNotes(Database.getInstance().getNotes());
     }
 
     /**

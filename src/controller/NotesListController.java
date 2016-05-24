@@ -134,7 +134,7 @@ public class NotesListController {
             //they should be enabled
             bDeleteNote.setDisable(nothingSelected);
             bOpenNote.setDisable(nothingSelected);
-        });
+        }); //table.getSelectionModel().selectedItemProperty
     } //initTable()
 
     /**

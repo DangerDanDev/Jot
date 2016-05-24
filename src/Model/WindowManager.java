@@ -53,10 +53,7 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
             NoteController noteController = new NoteController(note, this);
             noteController.getStage().show();
 
-            openNotes.add(note);
-            note.setHost(this);
-
-            windows.add(noteController);
+            trackNote(note, noteController);
 
             //hook up the listener that tracks when notes are closed
             noteController.getStage().setOnHidden(new CloseNoteListener(note, noteController));
@@ -106,6 +103,25 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
         //if it was showing, bring it to front
         else
             notesListController.getStage().toFront();
+    }
+
+    /**
+     * Adds a note and its associated controller to our tracking list
+     * @param note
+     * @param noteController
+     */
+    private void trackNote(Note note, NoteController noteController) {
+        openNotes.add(note);
+        note.setHost(this);
+
+        windows.add(noteController);
+    }
+
+    private void untrackNote(Note note, NoteController noteController) {
+        openNotes.remove(note);
+        note.setHost(null);
+
+        windows.remove(noteController);
     }
 
     @Override

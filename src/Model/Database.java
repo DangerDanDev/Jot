@@ -1,5 +1,6 @@
 package Model;
 
+import Model.color.ColorPack;
 import Model.color.NoteColors;
 import javafx.scene.paint.Color;
 
@@ -49,7 +50,21 @@ public class Database {
      */
     private PreparedStatement preparedNewNoteStatement;
 
+    /**
+     * Statement used to delete a specific note from the database
+     */
     private PreparedStatement preparedDeleteNoteStatement;
+
+    /**
+     * Statement used to update a note in the database
+     */
+    private PreparedStatement preparedNoteUpdateStatement;
+
+    /**
+     * Statement used to query notes, optionally with a specific
+     * title criteria
+     */
+    private PreparedStatement preparedGetNotesStatement;
 
     private long nextID = 0;
 
@@ -124,6 +139,10 @@ public class Database {
                             "?, " +     //OPEN
                             "?)"        //color
                         );
+
+            //select any notes where the title contains the string supplied in place of '?'
+            preparedGetNotesStatement = connection.prepareStatement( " SELECT * FROM " + TABLE_NOTES + " " +
+                                                                    " WHERE " + COLUMN_TITLE + " LIKE ? ");
 
             preparedDeleteNoteStatement = connection.prepareStatement(
                     " DELETE FROM " + TABLE_NOTES + " " +
@@ -236,11 +255,65 @@ public class Database {
         }
     }
 
+    /**
+     * Queries all notes
+     * @return
+     */
     public ArrayList<Note> getNotes() {
+        return getNotes("");
+    }
+
+    /**
+     * Queries for all notes whose title contains a given string
+     * @param query The string that the title must contain to be returned
+     * @return
+     */
+    public ArrayList<Note> getNotes(String query) {
+
+        final int QUERY_TITLE_INDEX = 1;
 
         ArrayList<Note> notes  = new ArrayList<>();
 
         try {
+            preparedGetNotesStatement.setString(1, "%" + query + "%");
+
+            ResultSet results = preparedGetNotesStatement.executeQuery();
+
+            while(results.next()) {
+                Note note = new Note(results.getLong(COLUMN_ID),
+                                    results.getString(COLUMN_TITLE),
+                                    results.getString(COLUMN_CONTENT),
+                                    new Date(results.getDate(COLUMN_DATE_SAVED).getTime()));
+
+                try {
+                    //color is 3 decimals between 0 and 1 all separated by a comma-- so an array of 3 components: R, G, and B!
+                    String colorStr[] = results.getString(COLUMN_COLOR).split(",");
+
+                    //parse each of the 3 strings representing an RGB value
+                    float r = Float.parseFloat(colorStr[0]);
+                    float g = Float.parseFloat(colorStr[1]);
+                    float b = Float.parseFloat(colorStr[2]);
+
+                    //alpha is always 1. Our notes are not transparent!
+                    float a = 1.0f;
+
+                    note.setColor(new Color(r,g,b,a)); //1.0 at the end is opacity
+
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                } catch(IllegalArgumentException ex) {
+                    note.setColor(NoteColors.DEFAULT_COLOR.getColor());
+                }
+
+                notes.add(note);
+            } //while(results.next())
+        } catch (SQLException e1) {
+            e1.printStackTrace();
+        } finally {
+            return notes;
+        }
+
+        /*try {
             Statement statement = connection.createStatement();
 
             String getAllNotes = " SELECT * " +
@@ -282,7 +355,7 @@ public class Database {
         } catch (SQLException e) {
             e.printStackTrace();
             return null;
-        }
+        }*/
     }
 
     private long getNextID() throws SQLException{
@@ -320,8 +393,6 @@ public class Database {
             e.printStackTrace();
         }
     }
-    
-    private PreparedStatement preparedNoteUpdateStatement;
     
     public void updateNote(Note note) {
         try {

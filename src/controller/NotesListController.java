@@ -2,6 +2,10 @@ package controller;
 
 import Model.*;
 import View.ViewLoader;
+import javafx.beans.InvalidationListener;
+import javafx.beans.Observable;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,10 +14,7 @@ import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.PieChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Background;
@@ -40,7 +41,7 @@ import java.util.ResourceBundle;
  * responsible for creating new notes from the database and passing them along to the NotesManager
  * when they need to be opened.
  */
-public class NotesListController implements Initializable {
+public class NotesListController {
 
     private Stage stage;
 
@@ -65,6 +66,12 @@ public class NotesListController implements Initializable {
     private Button bAddNote;
 
     /**
+     * The text field that determines the what string we will search for
+     */
+    @FXML
+    private TextField tfQuery;
+
+    /**
      * The object that handles showing of notes
      */
     private NoteControllerHost host;
@@ -86,21 +93,19 @@ public class NotesListController implements Initializable {
             loader.setController(this);
             Parent root = loader.load();
 
+            initTable();
+
             setStage(new Stage());
             getStage().setScene(new Scene(root, 400, 300));
 
             setNotes(Database.getInstance().getNotes());
+            tfQuery.textProperty().addListener(new QueryUpdater());
             setHost(host);
         } catch (IOException e) {
             System.out.println("There was an error loading the master notes list.");
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        initTable();
     }
 
     /**
@@ -146,6 +151,16 @@ public class NotesListController implements Initializable {
         setNotes(Database.getInstance().getNotes());
     }
 
+    /**
+     * Class that listens for changes to the text of the query search box
+     * and triggers a re-query of the database
+     */
+    private class QueryUpdater implements ChangeListener<String> {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            setNotes(Database.getInstance().getNotes(tfQuery.getText()));
+        }
+    }
     /**
      * Sets my reference to the list of all notes in the database.
      * @param notes

@@ -3,7 +3,8 @@ package Model;
 import java.util.ArrayList;
 
 /**
- * Interface for whatever object will host and manage NoteControllers
+ * Interface for whatever object will host and manage NoteControllers. NoteControllers interact with it
+ * through this interface
  */
 public interface NoteControllerHost {
     /**

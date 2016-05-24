@@ -126,11 +126,11 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
 
     @Override
     public void exitAllNotes() {
-        for(Window window : windows)
-            window.getStage().hide();
+        for(int i = windows.size() - 1; i >= 0; i--)
+            windows.get(i).getStage().hide();
 
-        windows.clear();
-        openNotes.clear();
+        //windows.clear();
+        //openNotes.clear();
     }
 
     /**

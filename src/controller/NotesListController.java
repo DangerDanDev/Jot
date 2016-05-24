@@ -155,16 +155,24 @@ public class NotesListController implements Initializable {
     }
 
     /**
-     * Instructs my host to instantiate and create a new note
+     * Instantiates a new note from the database, and instructs the host
+     * window manager to show it
      */
     @FXML
     public void addNote() {
-        //getHost().createNote();
         try {
+            //get a new note from the database
             Note note = Database.getInstance().newNote();
+
+            //track this note and add it to the table
             notes.add(note);
+
+            //add the note to the table
             table.getItems().add(note);
+
+            //have the host window manager
             getHost().showNote(note);
+
         } catch (SQLException e) {
             System.out.println("There was an error adding a new note");
             System.out.println(e.getMessage());

@@ -35,7 +35,10 @@ import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /**
- * Created by scyth on 4/23/2016.
+ * This class manages a list of notes displayed in a table,
+ * tells its host (the NoteManager) when to open a note and what notes to open, and is
+ * responsible for creating new notes from the database and passing them along to the NotesManager
+ * when they need to be opened.
  */
 public class NotesListController implements Initializable {
 

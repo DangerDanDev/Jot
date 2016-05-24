@@ -98,9 +98,9 @@ public class NotesListController {
             setStage(new Stage());
             getStage().setScene(new Scene(root, 400, 300));
 
+            setHost(host);
             setNotes(Database.getInstance().getNotes());
             tfQuery.textProperty().addListener(new QueryUpdater());
-            setHost(host);
         } catch (IOException e) {
             System.out.println("There was an error loading the master notes list.");
             System.out.println(e.getMessage());
@@ -162,14 +162,34 @@ public class NotesListController {
         }
     }
     /**
-     * Sets my reference to the list of all notes in the database.
+     * Kills all notes already contained in my list.
+     * Then loops through all the new notes that were passed in, and
+     * checks to see if they are already open. If a note is already open, we add the ALREADY OPEN REFERENCE
+     * from the WINDOW MANAGER to the table instead of the reference from the database.
+     * This prevents the notes list not updating titles properly after a re-query
      * @param notes
      */
     public void setNotes(ArrayList<Note> notes) {
-        this.notes = notes;
+        this.notes.clear();
 
+        //loop through all the notes given to us
+        for(Note note : notes) {
+
+            //if the note is already open, we want to add the open instance
+            //not the instance from the database (or other source) to make sure the
+            //title list on the table stays properly updated
+            if(getHost().getOpenNotes().contains(note)) {
+                this.notes.add(getHost().getOpenNotes().get(getHost().getOpenNotes().indexOf(note)));
+            }
+            //if the note was not already open, we add it from the database
+            else {
+                this.notes.add(note);
+            }
+        }
+
+        //and update the table to reflect our changes
         table.getItems().clear();
-        table.getItems().addAll(notes);
+        table.getItems().addAll(this.notes);
     }
 
     /**

@@ -214,6 +214,7 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
         }
     }
 
+    @Override
     public ArrayList<Note> getOpenNotes() {
         return this.openNotes;
     }

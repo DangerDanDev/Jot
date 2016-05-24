@@ -263,6 +263,8 @@ public class Database {
         return getNotes("");
     }
 
+
+
     /**
      * Queries for all notes whose title contains a given string
      * @param query The string that the title must contain to be returned

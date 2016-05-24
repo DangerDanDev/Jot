@@ -63,6 +63,11 @@ public class Note {
     private Date dateSaved;
 
     /**
+     * The class that listens for changes to my title
+     */
+    private NoteListener host;
+
+    /**
      * My color!
      */
     private Color color = NoteColors.DEFAULT_COLOR.getColor();
@@ -134,6 +139,10 @@ public class Note {
 
     public void setTitle(String title) {
         this.title = title;
+
+        //if we have a host, notify it of the title change
+        if(getHost() != null)
+            getHost().noteTitleChanged(this);
 
         //we do not want to save if we are not fully initialized. This way, we do not save upon
         //loading a new note
@@ -210,6 +219,14 @@ public class Note {
         setSaved(false);
     }
 
+    public NoteListener getHost() {
+        return host;
+    }
+
+    public void setHost(NoteListener host) {
+        this.host = host;
+    }
+
     public void close() {
         setOpen(false);
 
@@ -232,5 +249,12 @@ public class Note {
 
     public boolean isOpen() {
         return this.open;
+    }
+
+    /**
+     * For any class that needs to listen to changes in my text or title
+     */
+    public interface NoteListener {
+        void noteTitleChanged(Note note);
     }
 }

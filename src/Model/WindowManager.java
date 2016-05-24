@@ -12,7 +12,7 @@ import java.util.ArrayList;
 /**
  * Created by DanDan on 5/22/2016.
  */
-public class WindowManager implements NoteControllerHost{
+public class WindowManager implements NoteControllerHost, Note.NoteListener {
 
     /**
      * A list of all notes currently showing in their own window
@@ -54,6 +54,8 @@ public class WindowManager implements NoteControllerHost{
             noteController.getStage().show();
 
             openNotes.add(note);
+            note.setHost(this);
+
             windows.add(noteController);
 
             //hook up the listener that tracks when notes are closed
@@ -123,6 +125,24 @@ public class WindowManager implements NoteControllerHost{
     }
 
     /**
+     * Notify the notes list window that a note it may be holding has been updated.
+     * @param note
+     */
+    @Override
+    public void noteTitleChanged(Note note) {
+        notesListController.refresh(note);
+    }
+
+    /**
+     * Tells the the note window that it needs to update a note if it is being
+     * shown on the table
+     * @param note
+     */
+    private void onOpenNoteChanged(Note note) {
+        notesListController.refresh(note);
+    }
+
+    /**
      *
      * @return True if all notes are closed and the noteListController's window is not visible; ie: No windows are open
      */
@@ -169,12 +189,17 @@ public class WindowManager implements NoteControllerHost{
         public void handle(WindowEvent event) {
             windows.remove(windows.get(openNotes.indexOf(note)));
             openNotes.remove(note);
+            note.setHost(null);
 
             //check if all windows are closed
             //if so, exit the program
             if(allWindowsClosed())
                 exit();
         }
+    }
+
+    public ArrayList<Note> getOpenNotes() {
+        return this.openNotes;
     }
 
     public interface Window {

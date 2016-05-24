@@ -212,6 +212,30 @@ public class Database {
         return note;
     }
 
+    public Note getNote(long id) {
+        try{
+            Statement statement = connection.createStatement();
+
+            String sql = "SELECT * " +
+                        " FROM " + TABLE_NEXT_ID + " " +
+                        " WHERE " + COLUMN_ID + " = " + id + " ";
+
+            ResultSet result = statement.executeQuery(sql);
+
+            result.next();
+
+            Note note = new Note(id, result.getString(COLUMN_TITLE), result.getString(COLUMN_CONTENT), new Date(result.getDate(COLUMN_DATE_SAVED).getTime()));
+
+            statement.close();
+
+            return note;
+
+        } catch(SQLException ex) {
+            System.out.println("There was an error loading note #" + id);
+            return null;
+        }
+    }
+
     public ArrayList<Note> getNotes() {
 
         ArrayList<Note> notes  = new ArrayList<>();

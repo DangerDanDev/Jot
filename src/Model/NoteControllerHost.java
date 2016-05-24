@@ -1,5 +1,7 @@
 package Model;
 
+import java.util.ArrayList;
+
 /**
  * Interface for whatever object will host and manage NoteControllers
  */
@@ -30,4 +32,10 @@ public interface NoteControllerHost {
      * Show the notes list
      */
     void showNotesList();
+
+    /**
+     * Returns a list of all the notes currently open
+     * @return
+     */
+    ArrayList<Note> getOpenNotes();
 }

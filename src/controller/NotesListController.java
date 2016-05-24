@@ -130,9 +130,9 @@ public class NotesListController implements Initializable {
     } //initTable()
 
     /**
-     * Called when a note's name changes; this updates the table's listing
+     * Called when an OPEN note's name changes; this updates the table's listing
      */
-    public void refresh() {
+    public void refresh(Note note) {
         table.refresh();
     }
 
@@ -159,7 +159,17 @@ public class NotesListController implements Initializable {
      */
     @FXML
     public void addNote() {
-        getHost().createNote();
+        //getHost().createNote();
+        try {
+            Note note = Database.getInstance().newNote();
+            notes.add(note);
+            table.getItems().add(note);
+            getHost().showNote(note);
+        } catch (SQLException e) {
+            System.out.println("There was an error adding a new note");
+            System.out.println(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     /**

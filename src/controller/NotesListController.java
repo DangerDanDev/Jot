@@ -123,18 +123,7 @@ public class NotesListController {
      * Prepares the table's CellFactories, and hooks up it's selection events
      */
     private void initTable() {
-        titleColumn.setCellFactory((Callback<TableColumn, NoteTitleCell>) param ->  {
-            NoteTitleCell cell = new NoteTitleCell();
-
-            //event listener for double clicking on an item in the table
-            cell.addEventFilter(MouseEvent.MOUSE_CLICKED,event -> {
-                if(event.getClickCount() == 2) {
-                    getHost().showNote(table.getItems().get(cell.getIndex()));
-                }
-            });
-
-            return cell;
-        } );
+        titleColumn.setCellFactory((Callback<TableColumn, NoteTitleCell>) param ->  new NoteTitleCell());
         lastEditedColumn.setCellFactory((Callback<TableColumn, NoteLastEditedCell>) param -> new NoteLastEditedCell());
 
         table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -248,6 +237,16 @@ public class NotesListController {
     }
 
     public class NoteTitleCell extends TableCell<Note, String> {
+
+        public NoteTitleCell() {
+            this.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                //If this cell contains a note,
+                //show a note when double clicked
+                if(!this.isEmpty() && event.getClickCount() == 2)
+                    showNoteAtIndex(getIndex());
+            });
+        }
+
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
@@ -268,11 +267,18 @@ public class NotesListController {
 
         public NoteLastEditedCell() {
             this.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                //If this cell contains a note,
                 //show a note when double clicked
-                getHost().showNote(table.getItems().get(this.getIndex()));
+                if(!this.isEmpty() && event.getClickCount() == 2)
+                    showNoteAtIndex(getIndex());
             });
         }
 
+        /**
+         *
+         * @param item
+         * @param empty
+         */
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);
@@ -287,6 +293,15 @@ public class NotesListController {
                 setGraphic(null);
             }
         }
+    }
+
+    /**
+     * Instructs the host to show the note that was clicked on, if it
+     * is not null.
+     * @param index The index of the table that was clicked
+     */
+    private void showNoteAtIndex(int index) {
+            getHost().showNote(table.getItems().get(index));
     }
 
     public void setStage(Stage stage) {

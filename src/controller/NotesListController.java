@@ -86,20 +86,31 @@ public class NotesListController {
   //  }*/
 
 
+    /**
+     * Loads the FXML file for the notelist controller, initializes the notes table,
+     * shows the stage, and adds a textproperty listener ot the search text field
+     * @param host
+     */
     public NotesListController(NoteControllerHost host) {
         try {
 
+            //load our FXML file
             FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("NotesList.fxml"));
             loader.setController(this);
             Parent root = loader.load();
 
+            //get the table rady for notes
             initTable();
 
+            //set the stage and scene
             setStage(new Stage());
             getStage().setScene(new Scene(root, 400, 300));
 
+            //set my host so that they can listen to when I want to show a note
             setHost(host);
             setNotes(Database.getInstance().getNotes());
+
+            //hook up the event listener for the user searching for notes
             tfQuery.textProperty().addListener(new QueryUpdater());
         } catch (IOException e) {
             System.out.println("There was an error loading the master notes list.");
@@ -118,7 +129,7 @@ public class NotesListController {
             //event listener for double clicking on an item in the table
             cell.addEventFilter(MouseEvent.MOUSE_CLICKED,event -> {
                 if(event.getClickCount() == 2) {
-                    host.showNote(table.getItems().get(cell.getIndex()));
+                    getHost().showNote(table.getItems().get(cell.getIndex()));
                 }
             });
 
@@ -254,6 +265,14 @@ public class NotesListController {
     }
 
     public class NoteLastEditedCell extends TableCell<Note, String> {
+
+        public NoteLastEditedCell() {
+            this.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+                //show a note when double clicked
+                getHost().showNote(table.getItems().get(this.getIndex()));
+            });
+        }
+
         @Override
         protected void updateItem(String item, boolean empty) {
             super.updateItem(item, empty);

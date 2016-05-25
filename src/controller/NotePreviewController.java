@@ -5,6 +5,7 @@ import View.ViewLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
@@ -23,13 +24,13 @@ public class NotePreviewController {
      * TextField that dislpays the note's title
      */
     @FXML
-    private TextField tfTitle;
+    private Label tfTitle;
 
     /**
      * Text field that displays the note's content
      */
     @FXML
-    private TextArea tfText;
+    private Label tfText;
 
     /**
      * VBox that represents the background of the note preview

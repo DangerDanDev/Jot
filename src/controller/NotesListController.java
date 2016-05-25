@@ -65,6 +65,9 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     @FXML
     private GridPane gpNotePreviews;
 
+    @FXML
+    private FlowPane fpNotePreviews;
+
     /**
      * The text field that determines the what string we will search for
      */
@@ -142,7 +145,7 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      */
     public void refresh(Note note) {
         table.refresh();
-        
+
     }
 
     /**
@@ -193,6 +196,9 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
         for(int i = 0; i < this.notes.size(); i++) {
             NotePreviewController controller = new NotePreviewController(this.notes.get(i), this);
             gpNotePreviews.add(controller.getRoot(), i % 2, i / 2);
+
+            NotePreviewController controller1 = new NotePreviewController(this.notes.get(i), this);
+            fpNotePreviews.getChildren().add(controller1.getRoot());
         }
 
         //and update the table to reflect our changes

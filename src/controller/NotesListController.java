@@ -17,10 +17,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.CornerRadii;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -41,7 +38,7 @@ import java.util.ResourceBundle;
  * responsible for creating new notes from the database and passing them along to the NotesManager
  * when they need to be opened.
  */
-public class NotesListController {
+public class NotesListController implements NotePreviewController.NotePreviewListener{
 
     private Stage stage;
 
@@ -64,6 +61,9 @@ public class NotesListController {
 
     @FXML
     private Button bAddNote;
+
+    @FXML
+    private GridPane gpNotePreviews;
 
     /**
      * The text field that determines the what string we will search for
@@ -142,6 +142,7 @@ public class NotesListController {
      */
     public void refresh(Note note) {
         table.refresh();
+        
     }
 
     /**
@@ -187,6 +188,13 @@ public class NotesListController {
             }
         }
 
+        gpNotePreviews.getChildren().clear();
+
+        for(int i = 0; i < this.notes.size(); i++) {
+            NotePreviewController controller = new NotePreviewController(this.notes.get(i), this);
+            gpNotePreviews.add(controller.getRoot(), i % 2, i / 2);
+        }
+
         //and update the table to reflect our changes
         table.getItems().clear();
         table.getItems().addAll(this.notes);
@@ -207,6 +215,9 @@ public class NotesListController {
 
             //add the note to the table
             table.getItems().add(note);
+
+            gpNotePreviews.add(new NotePreviewController(note, this).getRoot(), gpNotePreviews.getChildren().size() % 2,
+                            gpNotePreviews.getChildren().size() / 2);
 
             //have the host window manager
             getHost().showNote(note);
@@ -292,6 +303,20 @@ public class NotesListController {
                 setText(date.format(notes.get(getIndex()).getDateSaved()) + " at " +  time.format(notes.get(getIndex()).getDateSaved()));
                 setGraphic(null);
             }
+        }
+    }
+
+    /**
+     * Called when one of the notes previews is clicked
+     * @param note
+     * @param event
+     */
+    @Override
+    public void notePreviewClicked(Note note, MouseEvent event) {
+        //if we have double clicked on a note
+        if(event.getClickCount() == 2) {
+            //open the note
+            showNoteAtIndex(this.notes.indexOf(note));
         }
     }
 

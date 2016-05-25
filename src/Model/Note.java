@@ -4,10 +4,7 @@ import Model.color.NoteColors;
 import controller.NoteController;
 import javafx.scene.paint.Color;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -67,6 +64,8 @@ public class Note {
      */
     private NoteListener host;
 
+    private ArrayList<NoteListener> noteListeners = new ArrayList<>();
+
     /**
      * My color!
      */
@@ -123,6 +122,8 @@ public class Note {
         //we do not want to save if we are not fully initialized. This way, we do not save upon
         //loading a new note
         setSaved(false || !initialized);
+
+        onNoteChanged();
     }
 
     /**
@@ -140,13 +141,21 @@ public class Note {
     public void setTitle(String title) {
         this.title = title;
 
-        //if we have a host, notify it of the title change
-        if(getHost() != null)
-            getHost().noteTitleChanged(this);
-
         //we do not want to save if we are not fully initialized. This way, we do not save upon
         //loading a new note
         setSaved(false || !initialized);
+
+        onNoteChanged();
+    }
+
+    private void onNoteChanged() {
+        //if we have a host, notify it of the title change
+        if(getHost() != null)
+            getHost().noteChanged(this);
+
+        for(NoteListener listener : noteListeners) {
+            listener.noteChanged(this);
+        }
     }
 
     @Override
@@ -216,6 +225,8 @@ public class Note {
     public void setColor(Color color) {
         this.color = color;
 
+        onNoteChanged();
+
         setSaved(false);
     }
 
@@ -225,6 +236,14 @@ public class Note {
 
     public void setHost(NoteListener host) {
         this.host = host;
+    }
+
+    public void addListener(NoteListener listener) {
+        this.noteListeners.add(listener);
+    }
+
+    public void removeListener(NoteListener listener) {
+        this.noteListeners.remove(listener);
     }
 
     public void close() {
@@ -255,6 +274,6 @@ public class Note {
      * For any class that needs to listen to changes in my text or title
      */
     public interface NoteListener {
-        void noteTitleChanged(Note note);
+        void noteChanged(Note note);
     }
 }

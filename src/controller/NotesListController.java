@@ -45,15 +45,6 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     private ArrayList<Note> notes = new ArrayList<>();
 
     @FXML
-    private TableView<Note> table;
-
-    @FXML
-    private TableColumn titleColumn;
-
-    @FXML
-    private TableColumn lastEditedColumn;
-
-    @FXML
     private Button bOpenNote;
 
     @FXML
@@ -61,9 +52,6 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
 
     @FXML
     private Button bAddNote;
-
-    @FXML
-    private GridPane gpNotePreviews;
 
     @FXML
     private FlowPane fpNotePreviews;
@@ -74,20 +62,12 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     @FXML
     private TextField tfQuery;
 
+    private ArrayList<Note> selectedNotes = new ArrayList<>();
+
     /**
      * The object that handles showing of notes
      */
     private NoteControllerHost host;
-
-    /**
-     * Private constructor because this is a singleton class!
-     */
-/*    //private NotesListController() {
-     //   setStage(createWindow());
-//
- //       getStage().setOnCloseRequest(event -> onWindowClosed(event));
-  //  }*/
-
 
     /**
      * Loads the FXML file for the notelist controller, initializes the notes table,
@@ -101,9 +81,6 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
             FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("NotesList.fxml"));
             loader.setController(this);
             Parent root = loader.load();
-
-            //get the table rady for notes
-            initTable();
 
             //set the stage and scene
             setStage(new Stage());
@@ -123,29 +100,10 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     }
 
     /**
-     * Prepares the table's CellFactories, and hooks up it's selection events
-     */
-    private void initTable() {
-        titleColumn.setCellFactory((Callback<TableColumn, NoteTitleCell>) param ->  new NoteTitleCell());
-        lastEditedColumn.setCellFactory((Callback<TableColumn, NoteLastEditedCell>) param -> new NoteLastEditedCell());
-
-        table.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            //we need to know if anything is selected
-            boolean nothingSelected = table.getSelectionModel().getSelectedCells().size() == 0;
-
-            //if things are selected, the open/delete buttons should be enabled. Otherwise
-            //they should be enabled
-            bDeleteNote.setDisable(nothingSelected);
-            bOpenNote.setDisable(nothingSelected);
-        }); //table.getSelectionModel().selectedItemProperty
-    } //initTable()
-
-    /**
      * Called when an OPEN note's name changes; this updates the table's listing
      */
     public void refresh(Note note) {
-        table.refresh();
-
+        //TODO: Make sure the note previews refresh accurately
     }
 
     /**
@@ -176,7 +134,8 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     public void setNotes(ArrayList<Note> notes) {
         this.notes.clear();
 
-        //loop through all the notes given to us
+        //loop through all the notes given to us so we can filter the ones from the database out
+        //that we already have open
         for(Note note : notes) {
 
             //if the note is already open, we want to add the open instance
@@ -185,25 +144,24 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
             if(getHost().getOpenNotes().contains(note)) {
                 this.notes.add(getHost().getOpenNotes().get(getHost().getOpenNotes().indexOf(note)));
             }
-            //if the note was not already open, we add it from the database
+            //if the note was not already open or already in the previews list, we add it from the database
             else {
                 this.notes.add(note);
             }
         }
 
-        gpNotePreviews.getChildren().clear();
+        //add in all the notes that were passed in that do not already
+        //have previews open
+        //clear all the note previews
+        fpNotePreviews.getChildren().clear();
 
+        //and add in only the ntoes we need to show (ie: the ones passed in)
         for(int i = 0; i < this.notes.size(); i++) {
-            NotePreviewController controller = new NotePreviewController(this.notes.get(i), this);
-            gpNotePreviews.add(controller.getRoot(), i % 2, i / 2);
-
             NotePreviewController controller1 = new NotePreviewController(this.notes.get(i), this);
             fpNotePreviews.getChildren().add(controller1.getRoot());
         }
 
-        //and update the table to reflect our changes
-        table.getItems().clear();
-        table.getItems().addAll(this.notes);
+        System.out.println("Selected notes: " + selectedNotes.size());
     }
 
     /**
@@ -219,11 +177,10 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
             //track this note and add it to the table
             notes.add(note);
 
-            //add the note to the table
-            table.getItems().add(note);
-
-            gpNotePreviews.add(new NotePreviewController(note, this).getRoot(), gpNotePreviews.getChildren().size() % 2,
-                            gpNotePreviews.getChildren().size() / 2);
+            if(note.getTitle().contains(tfQuery.getText())) {
+                NotePreviewController previewController = new NotePreviewController(note, this);
+                fpNotePreviews.getChildren().add(previewController.getRoot());
+            }
 
             //have the host window manager
             getHost().showNote(note);
@@ -239,9 +196,23 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      * Instructs my host to show the currently selected note from the table
      */
     @FXML
-    public void showNote() {
-        if(table.getSelectionModel().getSelectedItem() != null)
-            getHost().showNote(table.getSelectionModel().getSelectedItem());
+    public void showNote(Note note) {
+        getHost().showNote(note);
+    }
+
+    /**
+     * Called when a Note notifies me of selection or deselection. I DO NOT MANAGE THE NOTE'S INTERNAL
+     * FLAG. Only an external list
+     * Adds or removes a note from the selected notes list
+     * @param note
+     * @param selected
+     */
+    @Override
+    public void setNoteSelected(Note note, boolean selected) {
+        if(selected && !selectedNotes.contains(note))
+            selectedNotes.add(note);
+        else
+            selectedNotes.remove(note);
     }
 
     /**
@@ -250,7 +221,8 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      */
     @FXML
     public void deleteSelectedNote() {
-        getHost().deleteNote(table.getSelectionModel().getSelectedItem());
+        //getHost().deleteNote(table.getSelectionModel().getSelectedItem());
+        //TODO: delete any and all selected notes
     }
 
     public class NoteTitleCell extends TableCell<Note, String> {
@@ -313,26 +285,12 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     }
 
     /**
-     * Called when one of the notes previews is clicked
-     * @param note
-     * @param event
-     */
-    @Override
-    public void notePreviewClicked(Note note, MouseEvent event) {
-        //if we have double clicked on a note
-        if(event.getClickCount() == 2) {
-            //open the note
-            showNoteAtIndex(this.notes.indexOf(note));
-        }
-    }
-
-    /**
      * Instructs the host to show the note that was clicked on, if it
      * is not null.
      * @param index The index of the table that was clicked
      */
     private void showNoteAtIndex(int index) {
-            getHost().showNote(table.getItems().get(index));
+            getHost().showNote(notes.get(index));
     }
 
     public void setStage(Stage stage) {

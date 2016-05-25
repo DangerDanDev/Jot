@@ -1,6 +1,7 @@
 package controller;
 
 import Model.Note;
+import Model.color.ColorPack;
 import View.ViewLoader;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,13 +11,14 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.io.IOException;
 
 /**
  * Created by DanDan on 5/24/2016.
  */
-public class NotePreviewController {
+public class NotePreviewController implements  Note.NoteListener {
 
     private Note note;
 
@@ -36,7 +38,15 @@ public class NotePreviewController {
      * VBox that represents the background of the note preview
      */
     @FXML
-    private VBox root;
+    private Parent root;
+
+    @FXML
+    private VBox vbBackground;
+
+    /**
+     * Represents whether or not I'm selected on the NotesPreviewGrid
+     */
+    private boolean selected;
 
     private final NotePreviewListener listener;
 
@@ -51,7 +61,15 @@ public class NotePreviewController {
             loader.load();
 
             root.setOnMouseClicked(event -> {
-                listener.notePreviewClicked(getNote(), event);
+                if(event.getClickCount() == 1) {
+                    toggleSelected();
+                }
+                else if(event.getClickCount() == 2) {
+                    listener.showNote(getNote());
+
+                    //we do not get selected after a double click-- only opened
+                    setSelected(false);
+                }
             });
 
             setNote(note);
@@ -66,10 +84,15 @@ public class NotePreviewController {
     }
 
     public void setNote(Note note) {
+        if(this.note != null)
+            this.note.removeListener(this);
+
         this.note = note;
 
-        tfTitle.setText(note.getTitle());
-        tfText.setText(note.getText());
+        if(this.note != null)
+            this.note.addListener(this);
+
+        noteChanged(this.note);
     }
 
     public Note getNote() {
@@ -80,14 +103,74 @@ public class NotePreviewController {
      * Returns the root view of this view
      * @return
      */
-    public VBox getRoot() {
+    public Parent getRoot() {
         return root;
+    }
+
+    /**
+     * When the title of my note changes
+     * @param note
+     */
+    @Override
+    public void noteChanged(Note note) {
+        tfTitle.setText(note.getTitle());
+        tfText.setText(note.getText());
+        setColorStyle(note.getColor());
+    }
+
+    private void setColorStyle(Color color ) {
+        vbBackground.setStyle("-fx-background-color: rgb(" +
+                (255.0 * color.getRed()) + "," +
+                (255.0 * color.getGreen()) + "," +
+                (255.0 * color.getBlue()) + "," +
+                "1" +
+                ")");
+    }
+
+    public boolean isSelected() {
+        return this.selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
+
+        //if we are not selected, the selection box will not be drawn
+        float alpha = 0;
+
+        //if we are selected, draw a green box around the note
+        if(isSelected())
+            alpha = 1.0f;
+
+        root.setStyle("-fx-background-color: rgb(" +
+                        (30 + "," +
+                        (170) + "," +
+                        (30) + "," +
+                        alpha +
+                        ")"));
+
+        listener.setNoteSelected(this.getNote(), isSelected());
+    }
+
+    public void toggleSelected() {
+        setSelected(!isSelected());
     }
 
     /**
      * Interface for anyone who wants to host me!
      */
     public interface NotePreviewListener {
-        void notePreviewClicked(Note note, MouseEvent event);
+
+        /**
+         * Notifies the listener that my note should be shown
+         * @param note
+         */
+        void showNote(Note note);
+
+        /**
+         * Notifies the listener when I'm selected or deselected
+         * @param note
+         * @param selected
+         */
+        void setNoteSelected(Note note, boolean selected);
     }
 }

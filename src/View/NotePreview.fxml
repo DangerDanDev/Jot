@@ -2,23 +2,25 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
 
-<VBox fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" styleClass="background" stylesheets="@../Style/style.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="root" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <HBox prefWidth="200.0" styleClass="topbar">
+      <VBox fx:id="vbBackground" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="200.0" prefWidth="200.0" styleClass="background" stylesheets="@../Style/style.css" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="6.0" AnchorPane.rightAnchor="6.0" AnchorPane.topAnchor="6.0">
          <children>
-            <Label fx:id="tfTitle" text="Title" />
+            <HBox prefHeight="20.0" styleClass="topbar">
+               <children>
+                  <Label fx:id="tfTitle" text="Title" />
+               </children>
+               <VBox.margin>
+                  <Insets bottom="4.0" />
+               </VBox.margin>
+            </HBox>
+            <Label fx:id="tfText" text="Text" wrapText="true" />
          </children>
-         <padding>
-            <Insets bottom="4.0" top="4.0" />
-         </padding>
-         <VBox.margin>
-            <Insets bottom="4.0" />
-         </VBox.margin>
-      </HBox>
-      <Label fx:id="tfText" text="Text" wrapText="true" />
+      </VBox>
    </children>
-</VBox>
+</AnchorPane>

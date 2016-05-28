@@ -24,6 +24,9 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
      */
     private ArrayList<Window> windows = new ArrayList<>();
 
+    /**
+     * The controller for the notes list/notes preview grid
+     */
     private NotesListController notesListController;
 
     /**
@@ -58,6 +61,7 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
             //hook up the listener that tracks when notes are closed
             noteController.getStage().setOnHidden(new CloseNoteListener(note, noteController));
         } //if !openNotes.contains(note)
+
         //otherwise we want to bring it to the front, as it is already open
         else {
             windows.get(openNotes.indexOf(note)).getStage().toFront();

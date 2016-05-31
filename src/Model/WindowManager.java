@@ -1,6 +1,7 @@
 package Model;
 
 import controller.NoteController;
+import controller.NotePreviewController;
 import controller.NotesListController;
 import javafx.event.EventHandler;
 import javafx.stage.Stage;
@@ -92,6 +93,23 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
     @Override
     public void deleteNote(Note note) {
         Database.getInstance().deleteNote(note);
+
+        //if the note is open, we need to close its window
+        //because it's being deleted
+        if(openNotes.contains(note)) {
+
+            //so loop through every open window until we find the one
+            //that is showing the note we are deleting
+            for (int i = 0; i < windows.size(); i++) {
+
+                //if we've found the window showing this note,
+                //close it and then stop tracking the note/window
+                if(windows.get(i).getNote().equals(note)) {
+                    windows.get(i).getStage().close();
+                }
+            }
+        }
+
         onNotesDatabaseChanged();
     }
 
@@ -119,13 +137,6 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
         note.setHost(this);
 
         windows.add(noteController);
-    }
-
-    private void untrackNote(Note note, NoteController noteController) {
-        openNotes.remove(note);
-        note.setHost(null);
-
-        windows.remove(noteController);
     }
 
     @Override

@@ -9,13 +9,13 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1">
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="350.0" xmlns="http://javafx.com/javafx/8.0.60" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <HBox nodeOrientation="LEFT_TO_RIGHT">
          <children>
             <TextField fx:id="tfQuery" nodeOrientation="LEFT_TO_RIGHT" promptText="Search" />
             <Separator opacity="0.0" HBox.hgrow="ALWAYS" />
-            <Button fx:id="bDeleteNote" disable="true" mnemonicParsing="false" onAction="#deleteSelectedNote" text="Delete">
+            <Button fx:id="bDeleteNote" disable="true" mnemonicParsing="false" onAction="#deleteSelectedNotes" text="Delete">
                <HBox.margin>
                   <Insets right="4.0" />
                </HBox.margin></Button>

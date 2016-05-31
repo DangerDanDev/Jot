@@ -93,12 +93,14 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
 
             //hook up the event listener for the user searching for notes
             tfQuery.textProperty().addListener(new QueryUpdater());
-        } catch (IOException e) {
+        } //try {}
+
+        catch (IOException e) {
             System.out.println("There was an error loading the master notes list.");
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }
-    }
+        } //catch
+    } //NotesListController();
 
     /**
      * Called when an OPEN note's name changes; this updates the table's listing
@@ -210,10 +212,16 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      */
     @Override
     public void setNoteSelected(Note note, boolean selected) {
-        if(selected && !selectedNotes.contains(note))
+        if(selected && !selectedNotes.contains(note)) {
             selectedNotes.add(note);
-        else
+            bDeleteNote.setDisable(false);
+        }
+        else {
             selectedNotes.remove(note);
+
+            if(selectedNotes.size() == 0)
+                bDeleteNote.setDisable(true);
+        }
     }
 
     /**
@@ -221,9 +229,14 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      * and from the database
      */
     @FXML
-    public void deleteSelectedNote() {
+    public void deleteSelectedNotes() {
         //getHost().deleteNote(table.getSelectionModel().getSelectedItem());
         //TODO: delete any and all selected notes
+        for(Note note : selectedNotes) {
+            getHost().deleteNote(note);
+        }
+
+        selectedNotes.clear();
     }
 
     public class NoteTitleCell extends TableCell<Note, String> {

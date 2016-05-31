@@ -60,17 +60,7 @@ public class NotePreviewController implements  Note.NoteListener {
             loader.setController(this);
             loader.load();
 
-            root.setOnMouseClicked(event -> {
-                if(event.getClickCount() == 1) {
-                    toggleSelected();
-                }
-                else if(event.getClickCount() == 2) {
-                    listener.showNote(getNote());
-
-                    //we do not get selected after a double click-- only opened
-                    setSelected(false);
-                }
-            });
+            root.setOnMouseClicked(event -> onClick(event));
 
             setNote(note);
         }
@@ -80,6 +70,24 @@ public class NotePreviewController implements  Note.NoteListener {
             e.printStackTrace();
         } finally {
             this.listener = listener;
+        }
+    }
+
+    @FXML
+    private void onClick(MouseEvent event) {
+
+        //if we were just clicked once, toggle whether or not
+        //I'm selected
+        if(event.getClickCount() == 1) {
+            toggleSelected();
+        }
+        //if I was double clicked, force the listener to show me in a full note window
+        //and leave me selected
+        else if(event.getClickCount() == 2) {
+            listener.showNote(getNote());
+
+            //we do not get selected after a double click-- only opened
+            //setSelected(true);
         }
     }
 
@@ -113,6 +121,7 @@ public class NotePreviewController implements  Note.NoteListener {
      */
     @Override
     public void noteChanged(Note note) {
+
         tfTitle.setText(note.getTitle());
         tfText.setText(note.getText());
         setColorStyle(note.getColor());
@@ -150,6 +159,7 @@ public class NotePreviewController implements  Note.NoteListener {
 
         listener.setNoteSelected(this.getNote(), isSelected());
     }
+
 
     public void toggleSelected() {
         setSelected(!isSelected());

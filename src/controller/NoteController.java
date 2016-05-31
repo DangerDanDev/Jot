@@ -321,7 +321,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
             note.setTitle(tfNoteTitle.getText());
-            //TODO: notify the notes-manager of the change in name
         }
     }
 

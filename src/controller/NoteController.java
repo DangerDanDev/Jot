@@ -14,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -83,6 +84,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
 
             setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
+            getStage().getIcons().add(new Image("Content/icon.png"));
             setNote(note);
         }
         catch (IOException e) {

@@ -19,6 +19,11 @@ public interface NoteControllerHost {
     void deleteNote(Note note);
 
     /**
+     * Deletes all notes currently selected
+     */
+    void deleteAllNotes(ArrayList<Note> notes);
+
+    /**
      * Closes all open notes
      */
     void exitAllNotes();

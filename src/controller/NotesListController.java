@@ -138,7 +138,7 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
         this.notes.clear();
 
         //loop through all the notes given to us so we can filter the ones from the database out
-        //that we already have open
+        //that we already have open. Existing instance takes priority over database instance.
         for(Note note : notes) {
 
             //if the note is already open, we want to add the open instance
@@ -158,11 +158,13 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
         //clear all the note previews
         fpNotePreviews.getChildren().clear();
 
-        //and add in only the ntoes we need to show (ie: the ones passed in)
+        //and add in only the notes we need to show (ie: the ones passed in)
         for(int i = 0; i < this.notes.size(); i++) {
             NotePreviewController controller1 = new NotePreviewController(this.notes.get(i), this);
             fpNotePreviews.getChildren().add(controller1.getRoot());
         }
+
+        selectedNotes.clear();
 
         System.out.println("Selected notes: " + selectedNotes.size());
     }
@@ -232,13 +234,18 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     public void deleteSelectedNotes() {
         //getHost().deleteNote(table.getSelectionModel().getSelectedItem());
         //TODO: delete any and all selected notes
-        for(Note note : selectedNotes) {
-            getHost().deleteNote(note);
-        }
+        //for(Note note : selectedNotes) {
+        //    getHost().deleteNote(note);
+        //}
+
+        getHost().deleteAllNotes(selectedNotes);
 
         selectedNotes.clear();
     }
 
+    /**
+     * Defunct class to dsiaply info in a table cell
+     */
     public class NoteTitleCell extends TableCell<Note, String> {
 
         public NoteTitleCell() {
@@ -266,6 +273,9 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
         }
     }
 
+    /**
+     * Now Defunct class to display info in a table cell
+     */
     public class NoteLastEditedCell extends TableCell<Note, String> {
 
         public NoteLastEditedCell() {

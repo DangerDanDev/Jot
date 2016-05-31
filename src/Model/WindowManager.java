@@ -114,6 +114,16 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
     }
 
     /**
+     * Deletes all the notes passed in in the parameter
+     * @param notes All the notes requiring deletion
+     */
+    @Override
+    public void deleteAllNotes(ArrayList<Note> notes) {
+        for(int i = 0; i < notes.size(); i++) {
+            deleteNote(notes.get(i));
+        }
+    }
+/**
      * Shows the notes list window, if it is not already showing.
      * Otherwise brings it to front
      */

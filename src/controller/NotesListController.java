@@ -242,8 +242,6 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      */
     @FXML
     public void deleteSelectedNotes() {
-
-
          //Let my host know to delete everything I've got selected
         getHost().deleteAllNotes(selectedNotes);
 

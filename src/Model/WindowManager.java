@@ -87,11 +87,23 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
 
     /**
      * Deletes a note from the database and calls
-     * onNotesDatabaseChanged
+     * onNotesDatabaseChanged. Used for single note deletion
      * @param note
      */
     @Override
     public void deleteNote(Note note) {
+        deleteNoteNoReload(note);
+
+        onNotesDatabaseChanged();
+    }
+
+    /**
+     * Deletes a note from the database but does NOT call onNotesDatabaseChanged() to notify the
+     * listener that changes have been made. Use this method for batch deleting, where the
+     * onDatabaseChanged() method should be called at the end.
+     * @param note
+     */
+    public void deleteNoteNoReload(Note note) {
         Database.getInstance().deleteNote(note);
 
         //if the note is open, we need to close its window
@@ -109,19 +121,25 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
                 }
             }
         }
-
-        onNotesDatabaseChanged();
     }
 
     /**
-     * Deletes all the notes passed in in the parameter
+     * Deletes all the notes passed in in the parameter, and at the end calls
+     * onNotesDatabaseChanged
      * @param notes All the notes requiring deletion
      */
     @Override
     public void deleteAllNotes(ArrayList<Note> notes) {
-        for(int i = 0; i < notes.size(); i++) {
-            deleteNote(notes.get(i));
+
+        //Delete all the notes without calling
+        //onDatabaseChanged
+        for(Note note : notes) {
+            deleteNoteNoReload(note);
         }
+
+        //At the end, after all changes are made, call
+        //onNotesDatabaseChanged();
+        onNotesDatabaseChanged();
     }
 /**
      * Shows the notes list window, if it is not already showing.

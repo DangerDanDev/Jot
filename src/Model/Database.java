@@ -27,7 +27,9 @@ public class Database {
      * CONSTANTS
      **************************************/
 
-    private final String DATABASE_NAME;// = "sinknotes.db";
+    private final String DATABASE_NAME = "jot.db";
+    private final String DIRECTORY_NAME = "Jot";
+    private final String DATABASE_ABS_PATH;
 
     private static final String TABLE_NOTES = "notes";
     private static final String COLUMN_ID = "id";
@@ -73,13 +75,13 @@ public class Database {
      */
     private Database() {
         final File directory = new File(System.getProperty("user.home") + File.separator + "Documents" +
-                File.separator + "SinkNote");
+                File.separator + DIRECTORY_NAME);
 
         if(!directory.exists()) {
             directory.mkdirs();
         }
 
-        DATABASE_NAME = directory + File.separator + "sinknotes.db";
+        DATABASE_ABS_PATH = directory + File.separator + DATABASE_NAME;
 
         System.out.println("Database Directory: " + DATABASE_NAME);
 
@@ -87,7 +89,7 @@ public class Database {
         try {
             //load driver and establish connection
             org.sqlite.JDBC jdbc = new org.sqlite.JDBC();
-            connection = DriverManager.getConnection("jdbc:sqlite:" + DATABASE_NAME);
+            connection = DriverManager.getConnection("jdbc:sqlite:" + DATABASE_ABS_PATH);
 
             //find out if our Notes table already exists
             DatabaseMetaData meta = connection.getMetaData();

@@ -205,6 +205,13 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
         getHost().showNote(note);
     }
 
+    @FXML
+    private void showSelectedNotes() {
+        for(Note note : selectedNotes) {
+            getHost().showNote(note);
+        }
+    }
+
     /**
      * Called when a Note notifies me of selection or deselection. I DO NOT MANAGE THE NOTE'S INTERNAL
      * FLAG. Only an external list
@@ -217,12 +224,15 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
         if(selected && !selectedNotes.contains(note)) {
             selectedNotes.add(note);
             bDeleteNote.setDisable(false);
+            bOpenNote.setDisable(false);
         }
         else {
             selectedNotes.remove(note);
 
-            if(selectedNotes.size() == 0)
+            if(selectedNotes.size() == 0) {
                 bDeleteNote.setDisable(true);
+                bOpenNote.setDisable(true);
+            }
         }
     }
 
@@ -232,12 +242,9 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      */
     @FXML
     public void deleteSelectedNotes() {
-        //getHost().deleteNote(table.getSelectionModel().getSelectedItem());
-        //TODO: delete any and all selected notes
-        //for(Note note : selectedNotes) {
-        //    getHost().deleteNote(note);
-        //}
 
+
+         //Let my host know to delete everything I've got selected
         getHost().deleteAllNotes(selectedNotes);
 
         selectedNotes.clear();

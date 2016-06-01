@@ -34,14 +34,24 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
      * Loads all notes from the database, and shows them all at once
      */
     public WindowManager() {
+
+
+        ArrayList<Note> previouslyOpen = Database.getInstance().getOpenNotes();
+        System.out.println("Open notes: " + previouslyOpen.size());
+        for(Note note : previouslyOpen)
+            showNote(note);
+
         notesListController = new NotesListController(this);
-        notesListController.getStage().show();
         notesListController.getStage().setOnHidden(event -> {
             System.out.println("Notes List hidden");
 
             if(allWindowsClosed())
                 exit();
         });
+
+        if(openNotes.size() == 0)
+            notesListController.getStage().show();
+
     }
 
     /**

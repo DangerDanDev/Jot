@@ -68,6 +68,11 @@ public class Database {
      */
     private PreparedStatement preparedGetNotesStatement;
 
+    /**
+     * A statement used to query all open notes from a previous application instance
+     */
+    private PreparedStatement preparedGetOpenNotesStatement;
+
     private long nextID = 0;
 
     /**
@@ -150,6 +155,9 @@ public class Database {
                     " DELETE FROM " + TABLE_NOTES + " " +
                     " WHERE " + COLUMN_ID + " = ? "
             );
+
+            preparedGetOpenNotesStatement = connection.prepareStatement(" SELECT * FROM " + TABLE_NOTES + " " +
+                                                                    " WHERE " + COLUMN_OPEN + " = ?");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -292,6 +300,26 @@ public class Database {
         } finally {
             return notes;
         }
+    }
+
+    public ArrayList<Note> getOpenNotes() {
+        ArrayList<Note> openNotes = new ArrayList<>();
+
+        try {
+            preparedGetOpenNotesStatement.setBoolean(1, true);
+            ResultSet set = preparedGetOpenNotesStatement.executeQuery();
+
+
+            while(set.next()) {
+                Note note = getNoteFromResultSet(set);
+                openNotes.add(note);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("Open Notes result set size: " + openNotes.size());
+        return openNotes;
     }
 
     /**

@@ -21,7 +21,6 @@ public class App extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         Database db = Database.getInstance();
-        //NotesListController masterController = NotesListController.getInstance();
         WindowManager manager = new WindowManager();
     }
 }

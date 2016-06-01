@@ -206,6 +206,8 @@ public class Note {
     public void setOpen(boolean open) {
         this.open = open;
 
+        setSaved(false);
+
         System.out.println("Set open: " + open);
     }
 

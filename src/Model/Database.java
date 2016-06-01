@@ -284,82 +284,55 @@ public class Database {
             ResultSet results = preparedGetNotesStatement.executeQuery();
 
             while(results.next()) {
-                Note note = new Note(results.getLong(COLUMN_ID),
-                                    results.getString(COLUMN_TITLE),
-                                    results.getString(COLUMN_CONTENT),
-                                    new Date(results.getDate(COLUMN_DATE_SAVED).getTime()));
 
-                try {
-                    //color is 3 decimals between 0 and 1 all separated by a comma-- so an array of 3 components: R, G, and B!
-                    String colorStr[] = results.getString(COLUMN_COLOR).split(",");
-
-                    //parse each of the 3 strings representing an RGB value
-                    float r = Float.parseFloat(colorStr[0]);
-                    float g = Float.parseFloat(colorStr[1]);
-                    float b = Float.parseFloat(colorStr[2]);
-
-                    //alpha is always 1. Our notes are not transparent!
-                    float a = 1.0f;
-
-                    note.setColor(new Color(r,g,b,a)); //1.0 at the end is opacity
-
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch(IllegalArgumentException ex) {
-                    note.setColor(NoteColors.DEFAULT_COLOR.getColor());
-                }
-
-                notes.add(note);
+                notes.add(getNoteFromResultSet(results));
             } //while(results.next())
         } catch (SQLException e1) {
             e1.printStackTrace();
         } finally {
             return notes;
         }
+    }
 
-        /*try {
-            Statement statement = connection.createStatement();
+    /**
+     * Returns a note object from a result set that contains all columns of the note table
+     *
+     * @param results
+     * @return
+     */
+    private Note getNoteFromResultSet(ResultSet results) {
+        Note note = null;
 
-            String getAllNotes = " SELECT * " +
-                            " FROM " + TABLE_NOTES + " ";
+        try {
+             note = new Note(results.getLong(COLUMN_ID),
+                    results.getString(COLUMN_TITLE),
+                    results.getString(COLUMN_CONTENT),
+                    new Date(results.getDate(COLUMN_DATE_SAVED).getTime()));
 
-            ResultSet resultSet = statement.executeQuery(getAllNotes);
+            try {
+                //color is 3 decimals between 0 and 1 all separated by a comma-- so an array of 3 components: R, G, and B!
+                String colorStr[] = results.getString(COLUMN_COLOR).split(",");
 
-            while(resultSet.next()) {
+                //parse each of the 3 strings representing an RGB value
+                float r = Float.parseFloat(colorStr[0]);
+                float g = Float.parseFloat(colorStr[1]);
+                float b = Float.parseFloat(colorStr[2]);
 
-                Note note = new Note(resultSet.getLong(COLUMN_ID), resultSet.getString(COLUMN_TITLE), resultSet.getString(COLUMN_CONTENT), new Date(resultSet.getDate(COLUMN_DATE_SAVED).getTime()));
+                //alpha is always 1. Our notes are not transparent!
+                float a = 1.0f;
 
-                try {
-                    //color is 3 decimals between 0 and 1 all separated by a comma-- so an array of 3 components: R, G, and B!
-                    String colorStr[] = resultSet.getString(COLUMN_COLOR).split(",");
+                note.setColor(new Color(r,g,b,a)); //1.0 at the end is opacity
 
-                    //parse each of the 3 strings representing an RGB value
-                    float r = Float.parseFloat(colorStr[0]);
-                    float g = Float.parseFloat(colorStr[1]);
-                    float b = Float.parseFloat(colorStr[2]);
-
-                    //alpha is always 1. Our notes are not transparent!
-                    float a = 1.0f;
-
-                    note.setColor(new Color(r,g,b,a)); //1.0 at the end is opacity
-
-                } catch (NumberFormatException e) {
-                    e.printStackTrace();
-                } catch(IllegalArgumentException ex) {
-                    note.setColor(NoteColors.DEFAULT_COLOR.getColor());
-                }
-
-                notes.add(note);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch(IllegalArgumentException ex) {
+                note.setColor(NoteColors.DEFAULT_COLOR.getColor());
             }
-
-            statement.close();
-
-            return notes;
-            
         } catch (SQLException e) {
             e.printStackTrace();
-            return null;
-        }*/
+        } finally {
+            return note;
+        }
     }
 
     private long getNextID() throws SQLException{

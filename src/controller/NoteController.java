@@ -20,6 +20,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -85,6 +86,7 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
             setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
             getStage().getIcons().add(new Image("Content/icon.png"));
+            getStage().addEventHandler(WindowEvent.WINDOW_HIDDEN, event -> onClose(event));
             setNote(note);
         }
         catch (IOException e) {
@@ -97,6 +99,10 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         taNoteContent.setContextMenu(colorMenu);
+    }
+
+    private void onClose(WindowEvent event) {
+        note.setOpen(false);
     }
 
     /**

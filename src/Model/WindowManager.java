@@ -45,13 +45,22 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
         notesListController.getStage().setOnHidden(event -> {
             System.out.println("Notes List hidden");
 
-            if(allWindowsClosed())
+            if(allWindowsClosed()) {
                 exit();
+            }
         });
 
         if(openNotes.size() == 0)
             notesListController.getStage().show();
 
+    }
+
+    /**
+     *
+     * @return Whether or not the master note list stage is showing
+     */
+    public boolean isNotesListShowing() {
+        return notesListController.getStage().isShowing();
     }
 
     /**
@@ -179,6 +188,13 @@ public class WindowManager implements NoteControllerHost, Note.NoteListener {
 
     @Override
     public void exitAllNotes() {
+
+        //if the notes list window is not showing, that means we're doing a global close.
+        //Tell the NoteControllers this!
+        if(!notesListController.getStage().isShowing()) {
+            NoteController.enableGlobalClose();
+        }
+
         for(int i = windows.size() - 1; i >= 0; i--)
             windows.get(i).getStage().hide();
     }

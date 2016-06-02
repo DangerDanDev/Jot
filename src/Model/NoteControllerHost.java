@@ -40,6 +40,11 @@ public interface NoteControllerHost {
     void showNotesList();
 
     /**
+     * Checks if the notes list window is showing
+     */
+    boolean isNotesListShowing();
+
+    /**
      * Returns a list of all the notes currently open
      * @return
      */

@@ -399,25 +399,29 @@ public class Database {
             e.printStackTrace();
         }
     }
-    
+
+    /**
+     * Updates a note in the database
+     * @param note
+     */
     public void updateNote(Note note) {
         try {
-            Date now = new Date();
+            //Date now = new Date();
 
             Color color = note.getColor();
 
             preparedNoteUpdateStatement.setString(1, note.getTitle());
             preparedNoteUpdateStatement.setString(2, note.getText());
-            preparedNoteUpdateStatement.setDate(3, new java.sql.Date(now.getTime()));
-            //TODO: Fix this
-            preparedNoteUpdateStatement.setBoolean(4, /*note.isOpen()*/false);
+            preparedNoteUpdateStatement.setDate(3, new java.sql.Date(note.getDateSaved().getTime()));
+            //TODO: Implement checking if the note is open
+            preparedNoteUpdateStatement.setBoolean(4, note.isOpen());
             preparedNoteUpdateStatement.setString(5, color.getRed() + "," + color.getGreen() + "," + color.getBlue());
 
             preparedNoteUpdateStatement.setLong(6, note.id);
             
             preparedNoteUpdateStatement.execute();
 
-            note.setDateSaved(now);
+            //note.setDateSaved(now);
 
         } catch (SQLException ex) {
             System.out.println("Unable to use prepared statement on note with id: " + note.id);

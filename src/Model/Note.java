@@ -39,6 +39,11 @@ public class Note {
     private Date dateSaved;
 
     /**
+     * Represents whether the note is currently open in a window or not
+     */
+    private boolean open;
+
+    /**
      * The class that listens for changes to my title
      */
     private NoteListener host;
@@ -120,7 +125,14 @@ public class Note {
         onNoteChanged();
     }
 
+    /**
+     * Called any time an edit is made to this note object. Notifies all listeners
+     * of the change and updates my last edited/saved time
+     */
     private void onNoteChanged() {
+        //update my last saved time
+        setDateSaved(new Date());
+
         //if we have a host, notify it of the title change
         if(getHost() != null)
             getHost().noteChanged(this);
@@ -160,6 +172,14 @@ public class Note {
         this.color = color;
 
         onNoteChanged();
+    }
+
+    public void setOpen(boolean open){
+        this.open = open;
+    }
+
+    public boolean isOpen() {
+        return this.open;
     }
 
     public NoteListener getHost() {

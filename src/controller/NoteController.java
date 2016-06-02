@@ -33,6 +33,11 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     public static final int MINIMUM_HEIGHT = 125;
 
     /**
+     * Used to track how many note windows are currently open
+     */
+    private static int openNotes = 0;
+
+    /**
      * The window I'm representing
      */
     private Stage stage;
@@ -77,6 +82,13 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private NoteSaveListener noteSaveListener;
 
     /**
+     * Flag for when the application was exited as a whole. If this value is true,
+     * when the window closes, it should leave the note thinking it's open so it will
+     * open again on application restart
+     */
+    private static boolean globalClose = false;
+
+    /**
      * The context menu that shows
      */
     private ColorMenu colorMenu = new ColorMenu(this);
@@ -92,7 +104,33 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
             setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
             getStage().getIcons().add(new Image("Content/icon.png"));
+
             setNote(note);
+
+            //Configure the events that tell the note when it is opened or closed
+            getStage().addEventHandler(WindowEvent.WINDOW_SHOWN, event ->  {
+                openNotes++;
+                this.getNote().setOpen(true);
+
+                //TODO: This is a hack to get around crashes on global close. It should be fixed asap
+                noteSaveListener.noteChanged(this.getNote());
+            });
+
+            //we only set the note's save flag during a NON-GLOBAL close. If the whole application is shutting down,
+            //we want to start the same way as when it was exited, so don't change the note's open flag
+            getStage().addEventHandler(WindowEvent.WINDOW_HIDDEN, event -> {
+                openNotes--;
+
+                //If we are NOT global closing and I am NOT the last open note or the Note List is showing,
+                //I should save my closed state. If any of those are true, I should not save-- I want to re-open
+                //on application restart
+                if(!globalClose && (openNotes != 0 || getHost().isNotesListShowing())) {
+                    this.getNote().setOpen(false);
+                    //TODO: This is a hack to get around the crashes on a global close. IT SHOULD BE FIXED STAT.
+                    //The saving mechanism itself should be re-worked to not cause issues on shutdown
+                    noteSaveListener.noteChanged(note);
+                }
+            });
         }
         catch (IOException e) {
             System.out.println("Error instantiating Note Controller: " );
@@ -116,6 +154,9 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         note.setColor(color);
     }
 
+    /**
+     * Tells my host to exit all notes
+     */
     @Override
     public void exitAllNotes() {
         getHost().exitAllNotes();
@@ -322,6 +363,15 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
 
         //set up the object that handles note saving
         noteSaveListener = new NoteSaveListener(this.note);
+    }
+
+    /**
+     * Sets the flag for global close, so windows know whether or not just their window was closed,
+     * or the whole application-- since they handle those two cases differently.
+     * In the latter case, the notes database is not updated that specific notes were closed.
+     */
+    public static void enableGlobalClose() {
+        globalClose = true;
     }
 
     private NoteTitleListener noteTitleListener = new NoteTitleListener();

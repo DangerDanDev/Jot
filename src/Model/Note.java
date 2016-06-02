@@ -13,21 +13,10 @@ import java.util.Date;
 public class Note {
 
     /**
-     * The executor that saves all the notes in a 2nd thread
-     */
-    private static final NoteSaveExecutor executor = new NoteSaveExecutor();
-
-    /**
      * Each note is initially titled "untitled note 1" and so on. This number
      * is what the digit at the end will be
      */
     public static int untitled_note_num = 1;
-
-    /**
-     * Represents whether or not the note is fully instantiated. If this vairable is false,
-     * then changing the text/title/etc should NOT trigger an automatic save
-     */
-    private boolean initialized;
 
     /**
      * The window manager who is managing me
@@ -45,16 +34,6 @@ public class Note {
     private String text = "";
 
     /**
-     * Represents whether the note is currently open in a window
-     */
-    private boolean open;
-
-    /**
-     * Represents whether the note's most recent changes have been saved!
-     */
-    private boolean saved;
-
-    /**
      * Represents the last time that this note was saved
      */
     private Date dateSaved;
@@ -64,6 +43,9 @@ public class Note {
      */
     private NoteListener host;
 
+    /**
+     * List of my listeners
+     */
     private ArrayList<NoteListener> noteListeners = new ArrayList<>();
 
     /**
@@ -108,8 +90,6 @@ public class Note {
         setTitle(title);
         setText(text);
         setDateSaved(dateSaved);
-
-        initialized = true;
     }
 
     /**
@@ -118,10 +98,6 @@ public class Note {
      */
     public void setText(String txt) {
         this.text = txt;
-
-        //we do not want to save if we are not fully initialized. This way, we do not save upon
-        //loading a new note
-        setSaved(false || !initialized);
 
         onNoteChanged();
     }
@@ -141,10 +117,6 @@ public class Note {
     public void setTitle(String title) {
         this.title = title;
 
-        //we do not want to save if we are not fully initialized. This way, we do not save upon
-        //loading a new note
-        setSaved(false || !initialized);
-
         onNoteChanged();
     }
 
@@ -163,52 +135,12 @@ public class Note {
         return getTitle();
     }
 
-    /**
-     * Sets whether or not the note is saved. If the note is not saved (ie: boolean saved is false!), then this method
-     * automatically enqueues it in the NoteSaveExecutor's queue for saving in a second thread.
-     * @param saved Whether or not the note is currently saved since its most recent edit. If false, it will be
-     *              automatically enqueued in the NoteSaveExecutor's note saving queue
-     */
-    public void setSaved(boolean saved) {
-        this.saved = saved;
-
-        //if we just saved
-        if(!this.isSaved())
-            executor.queueNote(this);
-    }
-
-    /**
-     * Sets whether or not the note is saved. If the saved boolean passed in is true,
-     * sets the LastSaved property to the date that was passed in
-     * @param saved
-     * @param date
-     */
-    public void setSaved(boolean saved, Date date) {
-        setSaved(saved);
-
-        //update when I was last saved!
-        if(saved)
-            setDateSaved(date);
-    }
-
-    public boolean isSaved() {
-        return this.saved;
-    }
-
     public NoteController getController() {
         return controller;
     }
 
     public void setController(NoteController controller) {
         this.controller = controller;
-    }
-
-    public void setOpen(boolean open) {
-        this.open = open;
-
-        setSaved(false);
-
-        System.out.println("Set open: " + open);
     }
 
     public Date getDateSaved() {
@@ -228,8 +160,6 @@ public class Note {
         this.color = color;
 
         onNoteChanged();
-
-        setSaved(false);
     }
 
     public NoteListener getHost() {
@@ -248,15 +178,6 @@ public class Note {
         this.noteListeners.remove(listener);
     }
 
-    public void close() {
-        setOpen(false);
-
-        //if the note is somehow still not saved when it is closed (ie: User opened a note, and never typed ANYTHING into it),
-        //then we save it!
-        if(!isSaved())
-            executor.queueNote(this);
-    }
-
     @Override
     public boolean equals(Object obj) {
         //if our IDs are the same, we're the same note!
@@ -266,10 +187,6 @@ public class Note {
         } else {
             return super.equals(obj);
         }
-    }
-
-    public boolean isOpen() {
-        return this.open;
     }
 
     /**

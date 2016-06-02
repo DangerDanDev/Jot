@@ -2,6 +2,7 @@ package controller;
 
 import Model.Note;
 import Model.NoteControllerHost;
+import Model.NoteSaveListener;
 import Model.WindowManager;
 import View.ViewLoader;
 import javafx.beans.value.ChangeListener;
@@ -71,6 +72,11 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private NoteControllerHost host;
 
     /**
+     * Object that listens for changes in the note and saves them
+     */
+    private NoteSaveListener noteSaveListener;
+
+    /**
      * The context menu that shows
      */
     private ColorMenu colorMenu = new ColorMenu(this);
@@ -86,7 +92,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
             setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
             getStage().getIcons().add(new Image("Content/icon.png"));
-            getStage().addEventHandler(WindowEvent.WINDOW_HIDDEN, event -> onClose(event));
             setNote(note);
         }
         catch (IOException e) {
@@ -99,10 +104,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         taNoteContent.setContextMenu(colorMenu);
-    }
-
-    private void onClose(WindowEvent event) {
-        note.setOpen(false);
     }
 
     /**
@@ -305,7 +306,6 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         tfNoteTitle.textProperty().removeListener(noteTitleListener);
 
         this.note = note;
-        this.note.setOpen(true);
         this.note.setController(this);
 
         setColorStyle(note.getColor());
@@ -315,6 +315,8 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
 
         taNoteContent.textProperty().addListener(noteContentListener);
         tfNoteTitle.textProperty().addListener(noteTitleListener);
+
+        noteSaveListener = new NoteSaveListener(this.note);
     }
 
     private NoteTitleListener noteTitleListener = new NoteTitleListener();
@@ -330,7 +332,14 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         }
     }
 
+    /**
+     * Listens to changes in the text area on the form, and propogates changes to the note object
+     */
     private NoteContentListener noteContentListener = new NoteContentListener();
+
+    /**
+     * Listens for changes in the note's text, and propogates them to the note object
+     */
     private class NoteContentListener implements ChangeListener<String>{
 
         @Override

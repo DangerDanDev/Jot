@@ -233,7 +233,8 @@ public class Database {
         preparedNewNoteStatement.setString(TITLE_INDEX, note.getTitle());
         preparedNewNoteStatement.setString(TEXT_INDEX, note.getText());
         preparedNewNoteStatement.setDate(DATE_INDEX, new java.sql.Date(note.getDateSaved().getTime()));
-        preparedNewNoteStatement.setBoolean(OPEN_INDEX, note.isOpen());
+        //TODO: FIX THIS
+        preparedNewNoteStatement.setBoolean(OPEN_INDEX, /*note.isOpen()*/false);
         preparedNewNoteStatement.setString(COLOR_INDEX, color.getRed() + "," + color.getGreen() + "," + color.getBlue());
 
         preparedNewNoteStatement.execute();
@@ -408,7 +409,8 @@ public class Database {
             preparedNoteUpdateStatement.setString(1, note.getTitle());
             preparedNoteUpdateStatement.setString(2, note.getText());
             preparedNoteUpdateStatement.setDate(3, new java.sql.Date(now.getTime()));
-            preparedNoteUpdateStatement.setBoolean(4, note.isOpen());
+            //TODO: Fix this
+            preparedNoteUpdateStatement.setBoolean(4, /*note.isOpen()*/false);
             preparedNoteUpdateStatement.setString(5, color.getRed() + "," + color.getGreen() + "," + color.getBlue());
 
             preparedNoteUpdateStatement.setLong(6, note.id);
@@ -416,7 +418,6 @@ public class Database {
             preparedNoteUpdateStatement.execute();
 
             note.setDateSaved(now);
-            note.setSaved(true, now);
 
         } catch (SQLException ex) {
             System.out.println("Unable to use prepared statement on note with id: " + note.id);

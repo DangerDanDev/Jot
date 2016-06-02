@@ -9,6 +9,15 @@ import java.util.concurrent.Executors;
  */
 public class NoteSaveExecutor {
     /**
+     * The executor that saves all the notes in a 2nd thread
+     */
+    private static final NoteSaveExecutor instance = new NoteSaveExecutor();
+
+    public static NoteSaveExecutor getInstance() {
+        return instance;
+    }
+
+    /**
      * The executor that waits to execute saving of notes
      */
     private final Executor executor = Executors.newFixedThreadPool(1);
@@ -17,6 +26,10 @@ public class NoteSaveExecutor {
      * ArrayList of notes waiting to be saved
      */
     private ArrayList<Note> notesWaiting = new ArrayList<>();
+
+    private NoteSaveExecutor(){
+
+    }
 
     /**
      * If a note is not already queued up, adds it to the queue of notes waiting, and

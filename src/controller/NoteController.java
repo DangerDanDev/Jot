@@ -308,14 +308,19 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
         this.note = note;
         this.note.setController(this);
 
+        //Properly color the window
         setColorStyle(note.getColor());
 
+        //initialize the window's title and text fields
         taNoteContent.setText(note.getText());
         tfNoteTitle.setText(note.getTitle());
 
+        //configure the listeners for text and title changes, so changes to the
+        //associated text boxes are propogated to the note object itself
         taNoteContent.textProperty().addListener(noteContentListener);
         tfNoteTitle.textProperty().addListener(noteTitleListener);
 
+        //set up the object that handles note saving
         noteSaveListener = new NoteSaveListener(this.note);
     }
 

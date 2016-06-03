@@ -84,7 +84,7 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
 
             //set the stage and scene
             setStage(new Stage());
-            getStage().setScene(new Scene(root, 400, 300));
+            getStage().setScene(new Scene(root, 465, 240));
             getStage().getIcons().add(new Image("Content/icon.png"));
 
             //set my host so that they can listen to when I want to show a note

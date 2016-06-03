@@ -92,7 +92,7 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
             setNotes(Database.getInstance().getNotes());
 
             //hook up the event listener for the user searching for notes
-            tfQuery.textProperty().addListener(new QueryUpdater());
+            tfQuery.textProperty().addListener(event -> query());
         } //try {}
 
         catch (IOException e) {
@@ -101,6 +101,14 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
             e.printStackTrace();
         } //catch
     } //NotesListController();
+
+    /**
+     * Event handler for when the search box's text is changed. Immediately updates the notes list to
+     * only include those whose title includes the search content
+     */
+    private void query() {
+        setNotes(Database.getInstance().getNotes(tfQuery.getText()));
+    }
 
     /**
      * Called when an OPEN note's name changes; this updates the table's listing
@@ -117,16 +125,6 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
     }
 
     /**
-     * Class that listens for changes to the text of the query search box
-     * and triggers a re-query of the database
-     */
-    private class QueryUpdater implements ChangeListener<String> {
-        @Override
-        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-            setNotes(Database.getInstance().getNotes(tfQuery.getText()));
-        }
-    }
-    /**
      * Kills all notes already contained in my list.
      * Then loops through all the new notes that were passed in, and
      * checks to see if they are already open. If a note is already open, we add the ALREADY OPEN REFERENCE
@@ -136,6 +134,7 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
      */
     public void setNotes(ArrayList<Note> notes) {
         this.notes.clear();
+        this.fpNotePreviews.getChildren().clear();
 
         //loop through all the notes given to us so we can filter the ones from the database out
         //that we already have open. Existing instance takes priority over database instance.
@@ -166,7 +165,23 @@ public class NotesListController implements NotePreviewController.NotePreviewLis
 
         selectedNotes.clear();
 
+        if(this.notes.size() == 0)
+            fpNotePreviews.getChildren().addAll(configureEmptyStackPane());
+
         System.out.println("Selected notes: " + selectedNotes.size());
+    }
+
+    /**
+     * Used to populate the FlowPane when there are no notes in the field.
+     * This adds a simple label to the pane that displays "No notes to show"
+     */
+    private StackPane configureEmptyStackPane() {
+        StackPane pane = new StackPane();
+
+        Label label = new Label("Nothing to show. Create a new note?");
+        pane.getChildren().add(label);
+
+        return pane;
     }
 
     /**

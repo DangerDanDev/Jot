@@ -10,13 +10,17 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -27,7 +31,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class NoteController implements Initializable, ColorMenu.ColorMenuListener, WindowManager.Window{
+public class NoteController implements ColorMenu.ColorMenuListener, WindowManager.Window{
 
     public static final int MINIMUM_WIDTH = 255;
     public static final int MINIMUM_HEIGHT = 125;
@@ -54,6 +58,12 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private VBox rootView;
 
     /**
+     * The toolbar across the top
+     */
+    @FXML
+    private HBox toolBar;
+
+    /**
      * The main body of the note
      */
     @FXML
@@ -70,6 +80,12 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
      */
     @FXML
     private Button bDrag;
+
+    @FXML
+    private Button bExit;
+
+    @FXML
+    private Button bAddNewNote;
 
     /**
      * The class that will manage me, and when requested, create new notes for me
@@ -94,12 +110,16 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
     private ColorMenu colorMenu = new ColorMenu(this);
 
     public NoteController(Note note, NoteControllerHost host) {
-        try {
+        //try {
             this.setHost(host);
 
-            FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("Note.fxml"));
+            initialize();
+
+            /*FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("Note.fxml"));
             loader.setController(this);
-            rootView = loader.load();
+            rootView = loader.load();*/
+
+
 
             setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
@@ -131,16 +151,71 @@ public class NoteController implements Initializable, ColorMenu.ColorMenuListene
                     noteSaveListener.noteChanged(note);
                 }
             });
-        }
-        catch (IOException e) {
+        //}
+       /* catch (IOException e) {
             System.out.println("Error instantiating Note Controller: " );
             System.out.println(e.getMessage());
             e.printStackTrace();
-        }
+        }*/
     }
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
+    private final String TOP_BAR = "topbar";
+
+    /**
+     * Creates and initializes all the nodes on this window
+     */
+    public void initialize() {
+        //init the root view
+        rootView = new VBox();
+        rootView.getStylesheets().add("/Style/style.css");
+
+        //These are the events that allow the window to be both resized and dragged around
+        rootView.setOnMouseDragged(event -> onMouseDragged(event));
+        rootView.setOnMouseExited(event -> onMouseExit(event));
+        rootView.setOnMouseMoved(event -> onMouseMoved(event));
+        rootView.setOnMousePressed(event -> onMouseDragStarted(event));
+
+        //init the toolbar at the top
+        toolBar = new HBox();
+        toolBar.setPadding(new Insets(4,0,0,0));
+        toolBar.getStyleClass().add(TOP_BAR);
+        rootView.getChildren().add(toolBar);
+
+        //init the button to add new notes
+        ImageView addImage = new ImageView("/Content/add.png");
+        addImage.setFitWidth(24); addImage.setFitHeight(24);
+        bAddNewNote = new Button("", addImage);
+        bAddNewNote.setOnAction(event -> addNewNote());
+        toolBar.getChildren().add(bAddNewNote);
+
+        //init the note title's text field
+        tfNoteTitle = new TextField();
+        toolBar.getChildren().add(tfNoteTitle);
+        toolBar.setMargin(tfNoteTitle, new Insets(4,0,4,0));
+        HBox.setHgrow(tfNoteTitle, Priority.ALWAYS);
+
+        //init the button for dragging the window around
+        ImageView dragImage = new ImageView("Content/drag.png");
+        dragImage.setFitWidth(24); dragImage.setFitHeight(24);
+        bDrag = new Button("", dragImage);
+        bDrag.setOnMousePressed(event -> onMouseDragStarted(event));
+        bDrag.setOnMouseDragged(event -> onMouseDragged(event));
+        bDrag.setOnMouseMoved(event -> onMouseMoved(event));
+        toolBar.getChildren().add(bDrag);
+
+        //init the button for exiting the stage
+        ImageView exitImage = new ImageView("Content/exit.png");
+        exitImage.setFitHeight(24); exitImage.setFitWidth(24);
+        bExit = new Button("", exitImage);
+        bExit.setOnAction(event -> closeStage());
+        toolBar.getChildren().add(bExit);
+
+        taNoteContent = new TextArea();
+        rootView.setMargin(taNoteContent, new Insets(0,12,12,12));
+        rootView.getChildren().add(taNoteContent);
+        VBox.setVgrow(taNoteContent, Priority.ALWAYS);
+        HBox.setHgrow(taNoteContent, Priority.ALWAYS);
+
         taNoteContent.setContextMenu(colorMenu);
     }
 

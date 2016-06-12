@@ -10,6 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 
@@ -43,6 +45,9 @@ public class NotePreviewController implements  Note.NoteListener {
     @FXML
     private VBox vbBackground;
 
+    @FXML
+    private HBox toolbar;
+
     /**
      * Represents whether or not I'm selected on the NotesPreviewGrid
      */
@@ -55,22 +60,46 @@ public class NotePreviewController implements  Note.NoteListener {
      * @param note
      */
     public NotePreviewController(Note note, NotePreviewListener listener) {
-        try {
-            FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("NotePreview.fxml"));
-            loader.setController(this);
-            loader.load();
+        initialize();
 
-            root.setOnMouseClicked(event -> onClick(event));
+        root.setOnMouseClicked(event -> onClick(event));
 
-            setNote(note);
-        }
-        catch (IOException e) {
-            System.out.println("There was an error loading a note preview.");
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        } finally {
-            this.listener = listener;
-        }
+        setNote(note);
+
+        this.listener = listener;
+    }
+
+    private void initialize() {
+
+        //the anchor pane that holds all the nodes.
+        AnchorPane rootPane = new AnchorPane();
+        root = rootPane;
+        rootPane.setPrefSize(200,200);
+        root.getStylesheets().add("/Style/style.css");
+
+        //The VBox background that consistss of a top-level toolbar and a label
+        //that displays a note's text. It has a margin to allow for a selection box to
+        //be drawn around it when this note preview is selected
+        vbBackground = new VBox();
+        AnchorPane.setTopAnchor(vbBackground, 6.0);
+        AnchorPane.setBottomAnchor(vbBackground, 6.0);
+        AnchorPane.setLeftAnchor(vbBackground, 6.0);
+        AnchorPane.setRightAnchor(vbBackground, 6.0);
+        rootPane.getChildren().add(vbBackground);
+
+        //create the toolbar-- set it's style class so that it gets shaded slightly darker
+        //than the rest of the note preview
+        toolbar = new HBox();
+        toolbar.getStyleClass().add("topbar");
+        vbBackground.getChildren().add(toolbar);
+
+        //add the note title to the top toolbar
+        tfTitle = new Label();
+        toolbar.getChildren().add(tfTitle);
+
+        //add the note's text label to the VBox
+        tfText = new Label();
+        vbBackground.getChildren().add(tfText);
     }
 
     @FXML

@@ -115,12 +115,6 @@ public class NoteController implements ColorMenu.ColorMenuListener, WindowManage
 
             initialize();
 
-            /*FXMLLoader loader = new FXMLLoader(ViewLoader.class.getResource("Note.fxml"));
-            loader.setController(this);
-            rootView = loader.load();*/
-
-
-
             setStage(new Stage(StageStyle.TRANSPARENT));
             getStage().setScene(new Scene(rootView, 400,300));
             getStage().getIcons().add(new Image("Content/icon.png"));
@@ -151,18 +145,13 @@ public class NoteController implements ColorMenu.ColorMenuListener, WindowManage
                     noteSaveListener.noteChanged(note);
                 }
             });
-        //}
-       /* catch (IOException e) {
-            System.out.println("Error instantiating Note Controller: " );
-            System.out.println(e.getMessage());
-            e.printStackTrace();
-        }*/
     }
 
     private final String TOP_BAR = "topbar";
 
     /**
-     * Creates and initializes all the nodes on this window
+     * Creates and initializes all the nodes on this window. This includes most event handling,
+     * loading of images, etc
      */
     public void initialize() {
         //init the root view
